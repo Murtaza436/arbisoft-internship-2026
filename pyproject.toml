@@ -1,21 +1,17 @@
 [project]
-name = "week2-llm"
+name = "week1-ml"
 version = "0.1.0"
-description = "Week 2 - Deep Learning and LLM Fundamentals"
+description = "Add your description here"
 requires-python = ">=3.11"
 dependencies = [
-    "openai>=1.0.0",
-    "python-dotenv>=1.0.0",
-    "pandas>=2.0.0",
-    "jupyter>=1.0.0",
+    "jupyter>=1.1.1",
+    "matplotlib>=3.10.3",
     "notebook>=7.6.0",
+    "numpy>=2.2.6",
+    "pandas>=2.2.3",
+    "scikit-learn>=1.6.1",
+    "seaborn>=0.13.2",
 ]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
-
-[dependency-groups]
-dev = [
-    "pytest>=9.1.1",
-    "ruff>=0.15.20",
-]
