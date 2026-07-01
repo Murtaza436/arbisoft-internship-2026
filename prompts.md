@@ -3,19 +3,19 @@
 ## Week 2: Deep Learning and LLM Fundamentals
 
 ### 2026-06-28
+**Prompt:** "Can you provide a summary of the Week 2 tasks and a roadmap for what I need to accomplish?"
+**Model:** Claude (claude.ai)
+**Result:** Received a high-level overview of the Week 2 assignments, including a step-by-step roadmap for setting up the project, understanding LLM fundamentals, building the chat interface, and comparing models.
+
+### 2026-06-28
 **Prompt:** "Give me the complete week 2 setup from branch creation to code to jupyter notebook."
 **Model:** Claude (claude.ai)
 **Result:** Received full project structure, src/model_compare.py and src/chat.py helper scripts, and complete jupyter notebook cells for model comparison, results table, and multi-turn chat demo.
 
-### 2026-06-28
-**Prompt:** "How does multi-turn conversation work in LLMs if they are stateless?"
+### 2026-07-01
+**Prompt:** "What are the best free models available on OpenRouter that have decent rate limits?"
 **Model:** Claude (claude.ai)
-**Result:** Learned that conversation history is maintained as a list of message dictionaries on the client side and the full list is sent on every API call. Implemented this in src/chat.py in the chat_turn function.
-
-### 2026-06-28
-**Prompt:** "What is the difference between temperature 0 and temperature 1 in LLMs?"
-**Model:** Claude (claude.ai)
-**Result:** Temperature 0 is deterministic and always picks the most likely next token. Temperature 1 is more random and creative. Used lower temperature for factual tasks in the chat demo.
+**Result:** Received recommendations for top free-tier models on OpenRouter, such as Llama 3 8B Instruct and Gemini 1.5 Flash, along with details on balancing performance with context windows and token generation limits.
 
 ### 2026-07-01
 **Prompt:** "I got a 'failed to push some refs' error when trying to push my new week-2-pr branch after running git init."
