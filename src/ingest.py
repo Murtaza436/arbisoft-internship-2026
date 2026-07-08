@@ -12,9 +12,15 @@ def load_pdfs(pdf_dir):
             reader = PdfReader(path)
             text = ''
             for page in reader.pages:
-                text += page.extract_text() or ''
-            documents.append((filename, text))
-            print(f'Loaded: {filename} ({len(reader.pages)} pages)')
+                extracted = page.extract_text()
+                if extracted:
+                    text += extracted + ' '
+            text = text.strip()
+            if text:
+                documents.append((filename, text))
+                print(f'Loaded: {filename} - {len(text)} characters')
+            else:
+                print(f'WARNING: No text extracted from {filename} - PDF may be scanned/image based')
     return documents
 
 
@@ -43,6 +49,9 @@ def ingest_documents(pdf_dir, collection_name='week3_docs'):
     collection = client.create_collection(collection_name)
     documents = load_pdfs(pdf_dir)
 
+    if not documents:
+        raise ValueError('No text could be extracted from any PDF. Make sure PDFs are not scanned images.')
+
     all_chunks = []
     all_ids = []
     all_metadata = []
@@ -50,6 +59,7 @@ def ingest_documents(pdf_dir, collection_name='week3_docs'):
     chunk_id = 0
     for filename, text in documents:
         chunks = chunk_text(text)
+        print(f'{filename}: {len(chunks)} chunks')
         for chunk in chunks:
             all_chunks.append(chunk)
             all_ids.append(f'chunk_{chunk_id}')

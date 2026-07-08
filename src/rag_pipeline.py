@@ -13,8 +13,7 @@ def get_client():
     )
 
 
-def rag_answer(query, collection, model='meta-llama/llama-3-8b-instruct:free'):
-    """Retrieve relevant chunks and generate an answer."""
+def rag_answer(query, collection, model='tencent/hy3:free'):
     chunks, sources = retrieve(query, collection)
 
     context = '\n\n'.join(chunks)

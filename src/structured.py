@@ -22,7 +22,7 @@ def get_client():
     )
 
 
-def generate_structured_output(movie_description, model='meta-llama/llama-3-8b-instruct:free'):
+def generate_structured_output(movie_description, model='nvidia/nemotron-3-ultra-550b-a55b:free'):
     """Ask LLM to return structured JSON and validate with Pydantic."""
     client = get_client()
 
