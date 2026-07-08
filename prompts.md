@@ -1,33 +1,23 @@
 # prompts.md — AI Interaction Log
 
-## Week 1: AI/ML Foundations
+## Week 3: RAG, Vector DBs and Structured Outputs
 
-### 2026-06-23
-**Prompt:** "Explain the full week 1 and week 2 assignments from my Arbisoft internship roadmap in detail so I can explain to my mentor what I am doing — what each file does, where each function is, and what each function does."
+### 2026-06-28
+**Prompt:** "Give me the complete week 3 setup from start to finish including RAG pipeline, structured outputs and validation tests."
 **Model:** Claude (claude.ai)
-**Result:** Received a complete breakdown of the project structure, every file purpose, and a function-by-function explanation of data_prep.py, train.py, evaluate.py, main.py, and the test file. Used this as the conceptual foundation before writing any code.
+**Result:** Received full project structure, ingest.py for PDF loading and chunking, retriever.py for ChromaDB search, rag_pipeline.py combining retrieval and generation, structured.py with Pydantic validation, and complete jupyter notebook cells.
 
-### 2026-06-23
-**Prompt:** "uv init week1-ml is giving access denied error in PowerShell."
+### 2026-06-28
+**Prompt:** "What is RAG and why is chunking important?"
 **Model:** Claude (claude.ai)
-**Result:** Learned that PowerShell was running inside C:\WINDOWS\System32, a protected directory. Fix was to navigate to the Desktop first before running uv init.
+**Result:** RAG stands for Retrieval Augmented Generation. Chunking splits documents into smaller pieces so the most relevant section can be retrieved rather than the entire document. Overlap between chunks ensures sentences at boundaries are not missed.
 
-### 2026-06-23
-**Prompt:** "pytest is giving ModuleNotFoundError: No module named src when running tests."
+### 2026-06-28
+**Prompt:** "How does Pydantic validation catch LLM output errors?"
 **Model:** Claude (claude.ai)
-**Result:** Two fixes required: create empty __init__.py files inside src/ and tests/ so Python treats them as packages, and add pythonpath to pyproject.toml so pytest resolves imports from the project root.
+**Result:** Pydantic defines a schema as a Python class. When the LLM output is parsed as JSON and passed to the class, Pydantic checks every field type and raises a ValidationError if anything is wrong. This catches missing fields, wrong types, and unexpected values.
 
-### 2026-06-23
-**Prompt:** "pyproject.toml is giving TOML parse error: key with no value."
+### 2026-06-28
+**Prompt:** "How do I detect hallucinations in a RAG system?"
 **Model:** Claude (claude.ai)
-**Result:** The section header was accidentally split across multiple lines. TOML requires the entire header on one line as [tool.pytest.ini_options]. Fixed by overwriting the file using PowerShell Set-Content command.
-
-### 2026-06-23
-**Prompt:** "src/__init__.py is giving SyntaxError — the PowerShell New-Item command text was written into the file instead of creating an empty file."
-**Model:** Claude (claude.ai)
-**Result:** Fixed by running Set-Content src\__init__.py and Set-Content tests\__init__.py to overwrite both files with empty content.
-
-### 2026-06-23
-**Prompt:** "ruff check is returning 6 errors: W292 no newline at end of file and F401 pandas imported but unused."
-**Model:** Claude (claude.ai)
-**Result:** All 6 errors were auto-fixable. Ran ruff check with --fix flag. W292 means files must end with a blank newline. F401 means unused import — ruff removed the unused pandas import from the test file.
+**Result:** Two main ways: ask about topics not in the documents and check if the model says I do not know versus making something up, and check if the answer contains words actually present in the retrieved chunks. Added explicit prompt instruction to say I do not know if the answer is not in the context.
