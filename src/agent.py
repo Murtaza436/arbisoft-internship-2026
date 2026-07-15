@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from src.tools import web_search, read_file, TOOLS
 from src.memory import SessionMemory
 from src.hooks import pre_tool_hook, post_tool_hook
-from src.constants import AGENT_COLOR, TOOL_COLOR, RESET, BOLD, DIM
+from src.constants import RESET, DIM
 
 load_dotenv()
 
@@ -35,9 +35,14 @@ When answering questions:
 Previously stored facts from memory will be provided to you.
 Use them when relevant to answer questions.'''
 
+DEFAULT_MODEL = 'nvidia/nemotron-3-ultra-550b-a55b:free'
 
-def run_agent(user_message: str, memory: SessionMemory, model: str = 'openai/gpt-oss-120b:free') -> str:
-    """Run one turn of the agent."""
+
+def run_agent(
+    user_message: str,
+    memory: SessionMemory,
+    model: str = DEFAULT_MODEL,
+) -> str:
     client = get_client()
 
     facts = memory.get_facts()
@@ -99,7 +104,8 @@ def run_agent(user_message: str, memory: SessionMemory, model: str = 'openai/gpt
                 post_tool_hook(tool_name, result)
 
                 if tool_name == 'web_search':
-                    memory.add_fact(f"Searched for: {tool_args.get('query')} - found results")
+                    query = tool_args.get('query')
+                    memory.add_fact(f"Searched for: {query} - found results")
 
                 messages.append({
                     'role': 'tool',
