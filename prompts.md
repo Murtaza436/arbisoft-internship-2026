@@ -72,3 +72,20 @@
 **Prompt:** "Free OpenRouter models keep returning 404 when using tools parameter."
 **Model:** Claude (claude.ai)
 **Result:** Learned that function calling is a premium feature not supported on free tier models. Switched to nvidia/nemotron-3-ultra-550b-a55b:free which supports it.
+
+## Week 5: MCP and Multi-Agent Orchestration
+
+### 2026-07-05
+**Prompt:** "Give me complete week 5 setup including MCP server, supervisor worker agents, and tracing."
+**Model:** Claude (claude.ai)
+**Result:** Received full project structure with MCP server exposing resource and tool, supervisor agent routing tasks to search and summary workers, and tracing layer logging all events.
+
+### 2026-07-05
+**Prompt:** "What is MCP and how is it different from regular function calling?"
+**Model:** Claude (claude.ai)
+**Result:** MCP is a standard protocol like USB for AI tools. Regular function calling is custom per application. MCP gives one standard interface any AI can use to connect to any tool or data source.
+
+### 2026-07-05
+**Prompt:** "What is the supervisor worker pattern in multi-agent systems?"
+**Model:** Claude (claude.ai)
+**Result:** Supervisor receives user request, decides which specialized worker to use, routes the task, collects result. Workers are specialized agents that each do one thing well. Separates routing logic from execution logic.
