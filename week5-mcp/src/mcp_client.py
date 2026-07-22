@@ -1,13 +1,10 @@
-import asyncio
-import json
 from mcp import ClientSession
-from mcp.client.stdio import stdio_client
-from mcp import types
+from mcp.client.stdio import stdio_client, StdioServerParameters
 from src.tracer import trace
 
 
 async def call_mcp_tool(tool_name: str, arguments: dict) -> str:
-    server_params = types.StdioServerParameters(
+    server_params = StdioServerParameters(
         command='python',
         args=['-m', 'mcp_server.server'],
     )
@@ -28,7 +25,7 @@ async def call_mcp_tool(tool_name: str, arguments: dict) -> str:
 
 
 async def read_mcp_resource(uri: str) -> str:
-    server_params = types.StdioServerParameters(
+    server_params = StdioServerParameters(
         command='python',
         args=['-m', 'mcp_server.server'],
     )
@@ -40,9 +37,9 @@ async def read_mcp_resource(uri: str) -> str:
             return result.contents[0].text if result.contents else ''
 
 
-def run_mcp_tool(tool_name: str, arguments: dict) -> str:
-    return asyncio.run(call_mcp_tool(tool_name, arguments))
+async def run_mcp_tool(tool_name: str, arguments: dict) -> str:
+    return await call_mcp_tool(tool_name, arguments)
 
 
-def run_mcp_resource(uri: str) -> str:
-    return asyncio.run(read_mcp_resource(uri))
+async def run_mcp_resource(uri: str) -> str:
+    return await read_mcp_resource(uri)
