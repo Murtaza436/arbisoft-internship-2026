@@ -58,12 +58,12 @@ To run Jupyter for any week:
 cd weekN
 uv run jupyter notebook
 `
-
 ## API Keys Required
 
 Create a .env file in each week folder with:
-OPENROUTER_API_KEY=xyz123   # weeks 2, 3, 4
-BRAVE_API_KEY=xyz123        # week 4 only
+OPENROUTER_API_KEY=your-key-here   # weeks 2, 3, 4
+BRAVE_API_KEY=your-key-here        # week 4 only
 
 ## prompts.md
+
 All AI interactions are logged in prompts.md in each week folder documenting every significant prompt used during development.
