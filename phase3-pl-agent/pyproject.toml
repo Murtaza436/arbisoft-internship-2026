@@ -1,0 +1,26 @@
+[project]
+name = "phase3-pl-agent"
+version = "0.1.0"
+description = "Premier League Research Agent - Phase 3 Arbisoft Internship 2026"
+requires-python = ">=3.11"
+dependencies = [
+    "chromadb>=1.5.9",
+    "jupyter>=1.1.1",
+    "mcp>=2.0.0",
+    "notebook>=7.6.0",
+    "openai>=2.50.0",
+    "pandas>=3.0.3",
+    "pydantic>=2.13.4",
+    "python-dotenv>=1.2.2",
+    "requests>=2.34.2",
+    "sentence-transformers>=5.6.1",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.0",
+]
