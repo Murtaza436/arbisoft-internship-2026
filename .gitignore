@@ -1,5 +1,11 @@
 .venv/
 __pycache__/
 *.pyc
+*.pyo
 .env
-*.png
+chroma_db/
+data/statsbomb/
+data/cache/
+logs/
+.ipynb_checkpoints/
+*.cpython-*.pyc

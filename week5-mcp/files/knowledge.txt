@@ -1,0 +1,12 @@
+AI Research Knowledge Base
+
+Large Language Models are neural networks trained on massive text datasets.
+They use transformer architecture with attention mechanisms.
+Key players in the LLM space include OpenAI, Anthropic, Google, and Meta.
+OpenAI created GPT-4, Anthropic created Claude, Google created Gemini.
+Meta released Llama as an open source model family.
+RAG stands for Retrieval Augmented Generation.
+Vector databases store text as numerical embeddings for semantic search.
+Agents are LLM systems that can use tools and reason in multiple steps.
+MCP stands for Model Context Protocol created by Anthropic in 2024.
+MCP standardizes how AI models connect to external tools and data sources.

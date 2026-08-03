@@ -1,5 +1,3 @@
-import os
-import pytest
 from src.tools import read_file
 
 
