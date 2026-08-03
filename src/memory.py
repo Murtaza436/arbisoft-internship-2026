@@ -1,4 +1,4 @@
-from src.constants import MEMORY_COLOR, RESET, BOLD
+from src.constants import MEMORY_COLOR, RESET
 
 
 class SessionMemory:

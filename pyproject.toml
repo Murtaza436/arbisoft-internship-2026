@@ -18,5 +18,5 @@ pythonpath = ["."]
 
 [tool.uv.workspace]
 members = [
-    "phase3-pl-agent",
+    "week5-mcp",
 ]

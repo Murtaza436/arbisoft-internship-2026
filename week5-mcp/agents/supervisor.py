@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from agents.search_worker import search_worker
 from agents.summary_worker import summary_worker
 from src.tracer import trace
-from src.constants import SUPERVISOR_COLOR, RESET, BOLD, DIM
+from src.constants import SUPERVISOR_COLOR, RESET, BOLD
 
 load_dotenv()
 

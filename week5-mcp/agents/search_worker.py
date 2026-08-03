@@ -27,19 +27,33 @@ def search_worker(task: str) -> str:
     })
 
     client = get_client()
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[
-            {
-                'role': 'system',
-                'content': 'You are a research assistant. Summarize search results concisely.',
-            },
-            {
-                'role': 'user',
-                'content': f'Task: {task}\n\nSearch Results:\n{search_results}\n\nProvide a concise summary.',
-            },
-        ],
-    )
-    result = response.choices[0].message.content
+
+    try:
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {
+                    'role': 'system',
+                    'content': 'You are a research assistant. Summarize search results concisely.',
+                },
+                {
+                    'role': 'user',
+                    'content': (
+                        f'Task: {task}\n\n'
+                        f'Search Results:\n{search_results}\n\n'
+                        f'Provide a concise summary.'
+                    ),
+                },
+            ],
+        )
+
+        if not response.choices or response.choices[0].message.content is None:
+            result = f'Model returned empty response. Search results: {search_results[:200]}'
+        else:
+            result = response.choices[0].message.content
+
+    except Exception as e:
+        result = f'Error calling model: {str(e)}. Search results: {search_results[:200]}'
+
     trace('search_worker', 'task_complete', {'preview': result[:200]})
     return result

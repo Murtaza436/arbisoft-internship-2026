@@ -1,9 +1,14 @@
-from dotenv import load_dotenv
+ï»¿from dotenv import load_dotenv
 from src.agent import run_agent
 from src.memory import SessionMemory
 from src.constants import (
-    AGENT_COLOR, USER_COLOR, SYSTEM_COLOR,
-    ERROR_COLOR, INFO_COLOR, BOLD, RESET, CYAN
+    AGENT_COLOR,
+    USER_COLOR,
+    ERROR_COLOR,
+    INFO_COLOR,
+    BOLD,
+    RESET,
+    CYAN,
 )
 
 load_dotenv()
@@ -11,11 +16,12 @@ load_dotenv()
 
 def print_banner():
     print(f'{CYAN}{BOLD}')
-    print('+--------------------------------------+')
-    print('¦         Research Agent v1.0          ¦')
-    print('+--------------------------------------+')
+    print('Research Agent v1.0')
     print(RESET)
-    print(f'{INFO_COLOR}Commands: "exit" to quit, "clear" to reset memory, "memory" to see stored facts{RESET}')
+    print(
+        f'{INFO_COLOR}Commands: exit to quit, '
+        f'clear to reset memory, memory to see facts{RESET}'
+    )
     print()
 
 

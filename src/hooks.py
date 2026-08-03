@@ -12,7 +12,6 @@ def ensure_log_dir():
 
 
 def pre_tool_hook(tool_name: str, tool_args: dict) -> dict:
-    """Called before every tool execution. Logs the call with timestamp."""
     ensure_log_dir()
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log_entry = {
@@ -24,12 +23,15 @@ def pre_tool_hook(tool_name: str, tool_args: dict) -> dict:
     with open(LOG_FILE, 'a', encoding='utf-8') as f:
         f.write(json.dumps(log_entry) + '\n')
 
-    print(f'{HOOK_COLOR}[Hook] {timestamp} | Calling tool: {BOLD}{tool_name}{RESET}{HOOK_COLOR} with args: {tool_args}{RESET}')
+    print(
+        f'{HOOK_COLOR}[Hook] {timestamp} | '
+        f'Calling: {BOLD}{tool_name}{RESET}{HOOK_COLOR} '
+        f'args: {tool_args}{RESET}'
+    )
     return log_entry
 
 
 def post_tool_hook(tool_name: str, result: str) -> None:
-    """Called after every tool execution. Logs the result."""
     ensure_log_dir()
     timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log_entry = {
@@ -41,11 +43,15 @@ def post_tool_hook(tool_name: str, result: str) -> None:
     with open(LOG_FILE, 'a', encoding='utf-8') as f:
         f.write(json.dumps(log_entry) + '\n')
 
-    print(f'{HOOK_COLOR}[Hook] {timestamp} | Tool {BOLD}{tool_name}{RESET}{HOOK_COLOR} completed. Preview: {result[:100]}...{RESET}')
+    preview = result[:100]
+    print(
+        f'{HOOK_COLOR}[Hook] {timestamp} | '
+        f'{BOLD}{tool_name}{RESET}{HOOK_COLOR} '
+        f'completed. Preview: {preview}...{RESET}'
+    )
 
 
 def get_logs() -> list:
-    """Read and return all logged tool calls."""
     ensure_log_dir()
     if not os.path.exists(LOG_FILE):
         return []
