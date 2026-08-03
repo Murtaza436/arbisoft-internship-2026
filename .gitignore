@@ -8,3 +8,4 @@ data/statsbomb/
 data/cache/
 logs/
 .ipynb_checkpoints/
+*.cpython-*.pyc
