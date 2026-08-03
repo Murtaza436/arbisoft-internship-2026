@@ -30,19 +30,33 @@ def summary_worker(task: str, filepath: str = None) -> str:
         })
 
     client = get_client()
-    response = client.chat.completions.create(
-        model=MODEL,
-        messages=[
-            {
-                'role': 'system',
-                'content': 'You are a summarization assistant. Provide clear concise summaries.',
-            },
-            {
-                'role': 'user',
-                'content': f'Task: {task}\n\nContent to summarize:\n{content}\n\nProvide a clear summary.',
-            },
-        ],
-    )
-    result = response.choices[0].message.content
+
+    try:
+        response = client.chat.completions.create(
+            model=MODEL,
+            messages=[
+                {
+                    'role': 'system',
+                    'content': 'You are a summarization assistant. Provide clear concise summaries.',
+                },
+                {
+                    'role': 'user',
+                    'content': (
+                        f'Task: {task}\n\n'
+                        f'Content to summarize:\n{content}\n\n'
+                        f'Provide a clear summary.'
+                    ),
+                },
+            ],
+        )
+
+        if not response.choices or response.choices[0].message.content is None:
+            result = f'Model returned empty response. Content read: {content[:200]}'
+        else:
+            result = response.choices[0].message.content
+
+    except Exception as e:
+        result = f'Error calling model: {str(e)}. Content read: {content[:200]}'
+
     trace('summary_worker', 'task_complete', {'preview': result[:200]})
     return result

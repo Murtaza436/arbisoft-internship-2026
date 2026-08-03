@@ -1,7 +1,6 @@
 import os
 import requests
 from pypdf import PdfReader
-from src.constants import TOOL_COLOR, RESET, BOLD
 
 
 def web_search(query: str) -> str:
@@ -56,7 +55,7 @@ def read_file(filepath: str) -> str:
         return text.strip() if text else 'No text could be extracted from PDF.'
 
     else:
-        return f'Unsupported file type. Only .txt and .pdf are supported.'
+        return 'Unsupported file type. Only .txt and .pdf are supported.'
 
 
 TOOLS = [
