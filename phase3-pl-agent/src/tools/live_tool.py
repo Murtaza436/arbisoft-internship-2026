@@ -10,6 +10,7 @@ API_KEY = os.getenv('FOOTBALL_DATA_API_KEY')
 BASE_URL = 'https://api.football-data.org/v4'
 CACHE_DIR = 'data/cache'
 CACHE_DURATION_HOURS = 1
+CURRENT_SEASON = 2025
 
 
 def get_headers():
@@ -48,16 +49,18 @@ def api_get(endpoint: str) -> dict:
         data = response.json()
         save_cache(endpoint, data)
         return data
-    return {'error': f'API returned {response.status_code}'}
+    return {'error': f'API returned {response.status_code}: {response.text[:200]}'}
 
 
 def get_standings() -> str:
-    data = api_get('/competitions/PL/standings')
+    data = api_get(f'/competitions/PL/standings?season={CURRENT_SEASON}')
     if 'error' in data:
         return f'Could not fetch standings: {data["error"]}'
     try:
         season = data.get('season', {})
-        season_str = f"{season.get('startDate', '')[:4]}-{season.get('endDate', '')[:4]}"
+        start = season.get('startDate', '')[:4]
+        end = season.get('endDate', '')[:4]
+        season_str = f"{start}-{end}"
         standings = data['standings'][0]['table']
         lines = [f'Premier League Standings {season_str}:\n']
         for team in standings[:20]:
@@ -70,8 +73,8 @@ def get_standings() -> str:
             lost = team['lost']
             gd = team['goalDifference']
             lines.append(
-                f'{pos}. {name} | Pts: {pts} | P: {played} '
-                f'W: {won} D: {drawn} L: {lost} | GD: {gd}'
+                f'{pos}. {name} | Pts: {pts} | '
+                f'P:{played} W:{won} D:{drawn} L:{lost} | GD:{gd}'
             )
         return '\n'.join(lines)
     except Exception as e:
@@ -79,19 +82,22 @@ def get_standings() -> str:
 
 
 def get_top_scorers() -> str:
-    data = api_get('/competitions/PL/scorers?limit=10')
+    data = api_get(f'/competitions/PL/scorers?season={CURRENT_SEASON}&limit=10')
     if 'error' in data:
         return f'Could not fetch scorers: {data["error"]}'
     try:
         scorers = data.get('scorers', [])
-        lines = ['Premier League Top Scorers (Current Season):\n']
+        if not scorers:
+            return 'No scorers data available for this season.'
+        lines = ['Premier League Top Scorers 2025-26:\n']
         for i, scorer in enumerate(scorers, 1):
             player = scorer['player']['name']
             team = scorer['team']['name']
-            goals = scorer['goals']
-            assists = scorer.get('assists', 0)
+            goals = scorer.get('goals', 0) or 0
+            assists = scorer.get('assists', 0) or 0
             lines.append(
-                f'{i}. {player} ({team}) | Goals: {goals} | Assists: {assists}'
+                f'{i}. {player} ({team}) | '
+                f'Goals: {goals} | Assists: {assists}'
             )
         return '\n'.join(lines)
     except Exception as e:
@@ -99,31 +105,40 @@ def get_top_scorers() -> str:
 
 
 def get_recent_results() -> str:
-    data = api_get('/competitions/PL/matches?status=FINISHED&limit=10')
+    data = api_get(
+        f'/competitions/PL/matches?season={CURRENT_SEASON}&status=FINISHED'
+    )
     if 'error' in data:
         return f'Could not fetch results: {data["error"]}'
     try:
         matches = data.get('matches', [])
-        lines = ['Recent Premier League Results:\n']
-        for match in matches[-10:]:
+        if not matches:
+            return 'No finished matches found for 2025-26 season.'
+        recent = matches[-10:]
+        lines = ['Recent Premier League Results 2025-26:\n']
+        for match in recent:
             home = match['homeTeam']['name']
             away = match['awayTeam']['name']
-            home_score = match['score']['fullTime']['home']
-            away_score = match['score']['fullTime']['away']
+            hs = match['score']['fullTime']['home']
+            aws = match['score']['fullTime']['away']
             date = match['utcDate'][:10]
-            lines.append(f'{date}: {home} {home_score} - {away_score} {away}')
+            lines.append(f'{date}: {home} {hs} - {aws} {away}')
         return '\n'.join(lines)
     except Exception as e:
         return f'Error parsing results: {str(e)}'
 
 
 def get_upcoming_fixtures() -> str:
-    data = api_get('/competitions/PL/matches?status=SCHEDULED&limit=10')
+    data = api_get(
+        f'/competitions/PL/matches?season={CURRENT_SEASON}&status=SCHEDULED'
+    )
     if 'error' in data:
         return f'Could not fetch fixtures: {data["error"]}'
     try:
         matches = data.get('matches', [])
-        lines = ['Upcoming Premier League Fixtures:\n']
+        if not matches:
+            return 'No upcoming fixtures found. Season may not have started yet.'
+        lines = ['Upcoming Premier League Fixtures 2025-26:\n']
         for match in matches[:10]:
             home = match['homeTeam']['name']
             away = match['awayTeam']['name']
@@ -135,7 +150,9 @@ def get_upcoming_fixtures() -> str:
 
 
 def get_team_matches(team_name: str) -> str:
-    data = api_get('/competitions/PL/matches?limit=50')
+    data = api_get(
+        f'/competitions/PL/matches?season={CURRENT_SEASON}'
+    )
     if 'error' in data:
         return f'Could not fetch matches: {data["error"]}'
     try:
@@ -146,8 +163,8 @@ def get_team_matches(team_name: str) -> str:
             or team_name.lower() in m['awayTeam']['name'].lower()
         ]
         if not team_matches:
-            return f'No matches found for {team_name}'
-        lines = [f'Matches for {team_name}:\n']
+            return f'No matches found for {team_name} in 2025-26 season.'
+        lines = [f'Matches for {team_name} (2025-26):\n']
         for match in team_matches[:10]:
             home = match['homeTeam']['name']
             away = match['awayTeam']['name']
