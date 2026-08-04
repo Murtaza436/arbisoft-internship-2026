@@ -9,10 +9,20 @@ from src.ingest.statsbomb import (
     stats_to_text,
 )
 
-EMBEDDING_FN = SentenceTransformerEmbeddingFunction(
-    model_name='all-MiniLM-L6-v2'
-)
+os.environ['TRANSFORMERS_OFFLINE'] = '1'
+os.environ['HF_DATASETS_OFFLINE'] = '1'
+
+_EMBEDDING_FN = None
 COLLECTION_NAME = 'pl_player_stats'
+
+
+def get_embedding_fn():
+    global _EMBEDDING_FN
+    if _EMBEDDING_FN is None:
+        _EMBEDDING_FN = SentenceTransformerEmbeddingFunction(
+            model_name='all-MiniLM-L6-v2'
+        )
+    return _EMBEDDING_FN
 
 
 def get_chroma_client():
@@ -27,7 +37,7 @@ def get_or_create_collection():
         pass
     return client.create_collection(
         COLLECTION_NAME,
-        embedding_function=EMBEDDING_FN,
+        embedding_function=get_embedding_fn(),
     )
 
 
@@ -35,7 +45,7 @@ def get_collection():
     client = get_chroma_client()
     return client.get_collection(
         COLLECTION_NAME,
-        embedding_function=EMBEDDING_FN,
+        embedding_function=get_embedding_fn(),
     )
 
 
