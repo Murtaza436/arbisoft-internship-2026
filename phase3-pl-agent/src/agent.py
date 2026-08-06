@@ -3,6 +3,15 @@ import json
 from openai import OpenAI
 from dotenv import load_dotenv
 from src.tools.registry import TOOLS, TOOL_MAP
+from src.tools.live_tool import (
+    get_standings,
+    get_top_scorers,
+    get_recent_results,
+    get_upcoming_fixtures,
+    get_team_matches,
+)
+from src.tools.rag_tool import search_historical_stats
+from src.tools.search_tool import brave_search
 from src.memory import SessionMemory
 from src.hooks import pre_tool_hook, post_tool_hook
 from src.constants import RESET, DIM
@@ -91,7 +100,7 @@ RULES
 
 def get_primary_client():
     return OpenAI(
-        base_url='https://openrouter.ai/api/v1',
+        base_url=OPENROUTER_BASE_URL,
         api_key=os.getenv('OPENROUTER_API_KEY'),
     )
 
@@ -210,6 +219,113 @@ Rules:
         return f'Here is what I found:\n\n{context}'
     except Exception as e:
         return f'Here is what I found:\n\n{context}'
+
+
+def _extract_team_name(user_message: str) -> str:
+    common_teams = [
+        'arsenal', 'aston villa', 'bournemouth', 'brentford', 'brighton',
+        'burnley', 'chelsea', 'crystal palace', 'everton', 'fulham',
+        'liverpool', 'luton', 'manchester city', 'man city',
+        'manchester united', 'man united', 'newcastle', 'nottingham forest',
+        'sheffield united', 'spurs', 'tottenham', 'west ham', 'wolverhampton',
+        'wolves', 'leicester',
+    ]
+    lower_message = user_message.lower()
+    for team in common_teams:
+        if team in lower_message:
+            return team.title()
+    return ''
+
+
+def _build_direct_tool_context(user_message: str) -> tuple[str, list[str]]:
+    lower_message = user_message.lower()
+    sections = []
+    sources = []
+
+    if any(term in lower_message for term in [
+        'transfer', 'transfers', 'injury', 'news', 'rumour', 'rumor',
+        'signing', 'signed', 'loan', 'manager',
+    ]):
+        sections.append(brave_search(user_message))
+        sources.append('brave_search')
+
+    if any(term in lower_message for term in [
+        'standings', 'table', 'top of the premier league', 'top of the table',
+        'league position', 'current position',
+    ]):
+        sections.append(get_standings())
+        sources.append('get_standings')
+
+    if any(term in lower_message for term in [
+        'top scorer', 'leading scorer', 'scorer', 'goal scorer',
+    ]):
+        sections.append(get_top_scorers())
+        sources.append('get_top_scorers')
+
+    if any(term in lower_message for term in [
+        'recent result', 'recent results', 'latest result', 'latest results',
+        'recent match', 'latest match', 'scoreline', 'scores', 'results',
+    ]):
+        sections.append(get_recent_results())
+        sources.append('get_recent_results')
+
+    if any(term in lower_message for term in [
+        'upcoming fixture', 'upcoming fixtures', 'fixture', 'fixtures',
+        'next match', 'next games', 'next fixture', 'schedule',
+    ]):
+        sections.append(get_upcoming_fixtures())
+        sources.append('get_upcoming_fixtures')
+
+    team_name = _extract_team_name(user_message)
+    if team_name and any(term in lower_message for term in ['team', 'match', 'fixture', 'fixtures', 'results', 'games', 'for ', 'of ']):
+        sections.append(get_team_matches(team_name))
+        sources.append('get_team_matches')
+
+    if any(term in lower_message for term in [
+        'historical', 'compare', '2015', '2016', '2017', '2018', '2019',
+        '2020', '2021', '2022', '2023',
+    ]):
+        sections.append(search_historical_stats(user_message))
+        sources.append('search_historical_stats')
+
+    if not sections:
+        sections.append(brave_search(user_message))
+        sources.append('brave_search')
+
+    return '\n\n'.join(sections), sources
+
+
+def _answer_with_local_model(
+    user_message: str,
+    tool_context: str,
+    sources: list[str],
+) -> str:
+    client = OpenAI(
+        base_url=OLLAMA_BASE_URL,
+        api_key=os.getenv('OLLAMA_API_KEY', 'ollama'),
+    )
+    prompt = (
+        'You are a Premier League football research assistant.\n'
+        'Rewrite the provided tool output as a concise GitHub-flavored Markdown answer.\n'
+        'When the information is ranked or tabular, use a markdown table.\n'
+        'Keep names, spellings, numbers, and team names exactly as they appear in the tool output.\n'
+        'Do not invent facts or add extra commentary.\n\n'
+        f'User question:\n{user_message}\n\n'
+        f'Source tools:\n{", ".join(sources) if sources else "direct_router"}\n\n'
+        f'Tool output:\n{tool_context}\n'
+    )
+    try:
+        response = client.chat.completions.create(
+            model=FALLBACK_MODEL,
+            messages=[{'role': 'user', 'content': prompt}],
+            temperature=0,
+        )
+        if response.choices and response.choices[0].message.content:
+            return response.choices[0].message.content.strip()
+    except Exception:
+        pass
+
+    return tool_context or 'No answer generated.'
 
 
 def run_agent(

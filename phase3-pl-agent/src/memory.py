@@ -1,6 +1,9 @@
 from src.constants import MEMORY_COLOR, RESET
 
 
+DEFAULT_MEMORY_FILE = os.path.join('logs', 'session_memory.json')
+
+
 class SessionMemory:
 
     MAX_FACTS = 20
@@ -9,6 +12,32 @@ class SessionMemory:
     def __init__(self):
         self.facts = []
         self.conversation_history = []
+        self._load()
+
+    def _load(self):
+        if not os.path.exists(self.memory_file):
+            return
+
+        try:
+            with open(self.memory_file, 'r', encoding='utf-8') as file:
+                data = json.load(file)
+            self.facts = data.get('facts', [])
+            self.conversation_history = data.get('conversation_history', [])
+        except Exception:
+            self.facts = []
+            self.conversation_history = []
+
+    def _save(self):
+        os.makedirs(os.path.dirname(self.memory_file), exist_ok=True)
+        with open(self.memory_file, 'w', encoding='utf-8') as file:
+            json.dump(
+                {
+                    'facts': self.facts,
+                    'conversation_history': self.conversation_history,
+                },
+                file,
+                indent=2,
+            )
 
     def add_fact(self, fact: str):
 
@@ -48,6 +77,7 @@ class SessionMemory:
                 "content": content,
             }
         )
+        self._save()
 
         if len(self.conversation_history) > self.MAX_HISTORY:
             self.conversation_history.pop(0)

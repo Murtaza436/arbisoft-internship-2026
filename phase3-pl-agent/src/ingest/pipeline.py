@@ -12,6 +12,15 @@ MATCH_COLLECTION = "pl_history"
 PLAYER_COLLECTION = "pl_players"
 
 
+def get_embedding_fn():
+    global _EMBEDDING_FN
+    if _EMBEDDING_FN is None:
+        _EMBEDDING_FN = SentenceTransformerEmbeddingFunction(
+            model_name='all-MiniLM-L6-v2'
+        )
+    return _EMBEDDING_FN
+
+
 def get_chroma_client():
     return chromadb.PersistentClient(path="./chroma_db")
 

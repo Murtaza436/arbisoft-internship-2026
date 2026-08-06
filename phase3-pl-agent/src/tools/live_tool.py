@@ -11,6 +11,7 @@ BASE_URL = "https://api.football-data.org/v4"
 
 CACHE_DIR = "data/cache"
 CACHE_DURATION_HOURS = 1
+CURRENT_SEASON = 2025
 
 
 def get_headers():
