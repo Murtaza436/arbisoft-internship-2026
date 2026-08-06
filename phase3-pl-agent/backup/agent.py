@@ -9,7 +9,7 @@ from src.constants import RESET, BOLD, DIM
 
 load_dotenv()
 
-DEFAULT_MODEL = 'nvidia/llama-3.3-nemotron-super-49b-v1:free'
+DEFAULT_MODEL = 'openai/gpt-oss-20b:free'
 FALLBACK_MODEL = 'tinyllama:latest'
 
 SYSTEM_PROMPT = '''You are a Premier League football research assistant inspired by FotMob.
@@ -61,15 +61,11 @@ search across every available historical season.
 Mohamed Salah 2015-16
 unless the user explicitly requested that season.
 
-ALWAYS follow this order:
+? Call the most appropriate tool once.
 
-1. Decide which single tool best answers the user's question.
-2. Call ONLY that tool.
-3. Never call another tool unless the first tool explicitly failed.
-4. Never call the same tool twice.
-5. Never answer before reading the tool output.
-6. Use the tool output exactly as returned.
-7. Never use football knowledge from memory.
+? Do not repeatedly call the same tool.
+
+? After receiving tool output, answer immediately.
 
 ? Keep answers factual.
 
@@ -247,7 +243,7 @@ def run_agent(
 
     print(f'{DIM}Agent thinking... (model: {model}){RESET}')
 
-    max_iterations = 6
+    max_iterations = 4
     iteration = 0
     tool_call_counts = {}
     collected_results = []
@@ -256,13 +252,11 @@ def run_agent(
         iteration += 1
         try:
             response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            tools=TOOLS,
-            tool_choice="auto",
-            temperature=0,
-            top_p=0.9,
-        )
+                model=model,
+                messages=messages,
+                tools=TOOLS,
+                tool_choice='auto',
+            )
         except Exception as e:
             print("="*70)
             print("PRIMARY MODEL FAILED")
@@ -303,7 +297,7 @@ def run_agent(
                 tool_name = tool_call.function.name
                 tool_call_counts[tool_name] = tool_call_counts.get(tool_name, 0) + 1
 
-                if tool_call_counts[tool_name] >= 1:
+                if tool_call_counts[tool_name] > 2:
                     messages.append({
                         'role': 'tool',
                         'tool_call_id': tool_call.id,
@@ -328,9 +322,7 @@ def run_agent(
 
                 post_tool_hook(tool_name, result)
                 collected_results.append(result)
-                memory.add_fact(
-                    f"{tool_name}: {result[:300]}"
-                )
+                memory.add_fact(f'Used {tool_name} for: {user_message[:50]}')
 
                 messages.append({
                     'role': 'tool',
@@ -348,8 +340,19 @@ def run_agent(
     if collected_results:
         summary_client = get_primary_client()
         try:
-            if collected_results:
-                return "\n\n".join(collected_results)
+            summary = summary_client.chat.completions.create(
+                model=model,
+                messages=[
+                    {
+                        'role': 'system',
+                        'content': 'Summarize this Premier League data clearly. Use markdown tables for stats.',
+                    },
+                    {
+                        'role': 'user',
+                        'content': f'Question: {user_message}\n\nData collected:\n{chr(10).join(collected_results[:3])}\n\nProvide a clear answer.',
+                    },
+                ],
+            )
             if summary.choices and summary.choices[0].message.content:
                 return summary.choices[0].message.content
         except Exception:
@@ -357,3 +360,5 @@ def run_agent(
         return '\n\n'.join(collected_results[:2])
 
     return run_fallback_agent(user_message, memory)
+
+

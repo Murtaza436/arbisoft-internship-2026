@@ -9,93 +9,30 @@ from src.constants import RESET, BOLD, DIM
 
 load_dotenv()
 
-DEFAULT_MODEL = 'nvidia/llama-3.3-nemotron-super-49b-v1:free'
+DEFAULT_MODEL = 'openai/gpt-oss-20b:free'
 FALLBACK_MODEL = 'tinyllama:latest'
 
 SYSTEM_PROMPT = '''You are a Premier League football research assistant inspired by FotMob.
+You have access to these tools:
+1. search_historical_stats - detailed player stats from 2015-16 to 2022-23 seasons
+2. get_standings - current Premier League table
+3. get_top_scorers - current season top scorers
+4. get_recent_results - latest match results
+5. get_upcoming_fixtures - upcoming matches
+6. get_team_matches - matches for a specific team
+7. brave_search - web search for news and transfers
 
-You have access to football tools.
-
-AVAILABLE TOOLS
-
-1. search_historical_stats
-2. get_standings
-3. get_top_scorers
-4. get_recent_results
-5. get_upcoming_fixtures
-6. get_team_matches
-7. brave_search
-
-STRICT RULES
-
-? Always use tool results as the source of truth.
-
-? Never invent:
-  - seasons
-  - clubs
-  - scores
-  - standings
-  - transfers
-  - statistics
-
-? If a tool returns no data, tell the user exactly that.
-
-? Never rewrite league tables into paragraphs.
-
-? If a tool returns a table or list, preserve the ordering.
-
-? Never change match scores.
-
-? Never infer a winner from a draw.
-
-? Never say a team won 1-1.
-
-? Never say a team won 5-8.
-
-? If a match is 1-1 it is a draw.
-
-? If historical data is requested and no season is specified,
-search across every available historical season.
-
-? Never invent seasons such as
-Mohamed Salah 2015-16
-unless the user explicitly requested that season.
-
-ALWAYS follow this order:
-
-1. Decide which single tool best answers the user's question.
-2. Call ONLY that tool.
-3. Never call another tool unless the first tool explicitly failed.
-4. Never call the same tool twice.
-5. Never answer before reading the tool output.
-6. Use the tool output exactly as returned.
-7. Never use football knowledge from memory.
-
-? Keep answers factual.
-
-? Do not embellish or narrate statistics.
-
-'''
+IMPORTANT RULES:
+- For news, transfers, injuries: call brave_search ONCE then answer immediately
+- For historical stats (2015-16 to 2022-23): call search_historical_stats ONCE then answer
+- For current season: call the appropriate live tool ONCE then answer
+- NEVER call the same tool more than twice
+- After collecting data from tools ALWAYS provide a final answer
+- Do NOT keep searching if you already have relevant results'''
 
 FALLBACK_SYSTEM_PROMPT = '''You are a Premier League football assistant.
-
-You MUST answer ONLY using the supplied tool output.
-
-RULES
-
-- Do NOT invent facts.
-- Do NOT use outside football knowledge.
-- Do NOT rewrite standings into paragraphs.
-- Preserve rankings exactly as given.
-- Preserve scores exactly as given.
-- A 1-1 score is a draw.
-- Never describe a draw as a win.
-- Never change the winning team.
-- If a table is provided, reproduce it in markdown.
-- If a list is provided, preserve the same ordering.
-- If the tool says no data is available, tell the user exactly that.
-- Keep answers concise and factual.
-'''
+Answer questions about Premier League football concisely and accurately.
+Use markdown tables when showing statistics.'''
 
 
 def get_primary_client():
@@ -118,58 +55,16 @@ def run_fallback_agent(user_message: str, memory: SessionMemory) -> str:
 
     tool_results = []
 
-    if any(w in lower_msg for w in [
-        'standing',
-        'standings',
-        'table',
-        'league table',
-        'top of',
-        'bottom',
-        'position',
-        'rank',
-        'ranking',
-        'points'
-    ]):
+    if any(w in lower_msg for w in ['standing', 'table', 'top of', 'league position', 'points']):
         from src.tools.live_tool import get_standings
         tool_results.append(get_standings())
-    elif any(w in lower_msg for w in [
-        'scorer',
-        'scorers',
-        'top scorer',
-        'leading scorer',
-        'golden boot',
-        'goals this season',
-        'most goals'
-    ]):
+    elif any(w in lower_msg for w in ['scorer', 'goals this season', 'top goal', 'leading scorer']):
         from src.tools.live_tool import get_top_scorers
         tool_results.append(get_top_scorers())
-    elif any(w in lower_msg for w in [
-        'result',
-        'results',
-        'score',
-        'scores',
-        'latest match',
-        'recent match',
-        'last match',
-        'last game',
-        'won',
-        'lost',
-        'draw',
-        'vs',
-        'versus'
-    ]):
+    elif any(w in lower_msg for w in ['result', 'score', 'latest match', 'recent match']):
         from src.tools.live_tool import get_recent_results
         tool_results.append(get_recent_results())
-    elif any(w in lower_msg for w in [
-        'fixture',
-        'fixtures',
-        'upcoming',
-        'next match',
-        'next game',
-        'play next',
-        'when do',
-        'when does'
-    ]):
+    elif any(w in lower_msg for w in ['fixture', 'next match', 'upcoming', 'when do', 'when does']):
         from src.tools.live_tool import get_upcoming_fixtures
         tool_results.append(get_upcoming_fixtures())
     elif any(w in lower_msg for w in ['transfer', 'news', 'injury', 'injured', 'manager', 'signing', 'sign']):
@@ -192,19 +87,7 @@ def run_fallback_agent(user_message: str, memory: SessionMemory) -> str:
             'content': (
                 f'Data:\n{context}\n\n'
                 f'Question: {user_message}\n\n'
-                f'''Answer ONLY using the supplied data.
-
-Rules:
-
-- Do not invent information.
-- Do not rewrite league tables into paragraphs.
-- Preserve rankings exactly.
-- Preserve scores exactly.
-- Never infer winners from draws.
-- If the data is already formatted as a table or list, keep the same structure.
-- If the data says no information is available, say exactly that.
-- Do not use outside football knowledge.
-'''
+                f'Answer using the data above. Use markdown tables for stats.'
             )
         }
     ]
@@ -247,7 +130,7 @@ def run_agent(
 
     print(f'{DIM}Agent thinking... (model: {model}){RESET}')
 
-    max_iterations = 6
+    max_iterations = 4
     iteration = 0
     tool_call_counts = {}
     collected_results = []
@@ -256,13 +139,11 @@ def run_agent(
         iteration += 1
         try:
             response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            tools=TOOLS,
-            tool_choice="auto",
-            temperature=0,
-            top_p=0.9,
-        )
+                model=model,
+                messages=messages,
+                tools=TOOLS,
+                tool_choice='auto',
+            )
         except Exception as e:
             print("="*70)
             print("PRIMARY MODEL FAILED")
@@ -303,7 +184,7 @@ def run_agent(
                 tool_name = tool_call.function.name
                 tool_call_counts[tool_name] = tool_call_counts.get(tool_name, 0) + 1
 
-                if tool_call_counts[tool_name] >= 1:
+                if tool_call_counts[tool_name] > 2:
                     messages.append({
                         'role': 'tool',
                         'tool_call_id': tool_call.id,
@@ -328,9 +209,7 @@ def run_agent(
 
                 post_tool_hook(tool_name, result)
                 collected_results.append(result)
-                memory.add_fact(
-                    f"{tool_name}: {result[:300]}"
-                )
+                memory.add_fact(f'Used {tool_name} for: {user_message[:50]}')
 
                 messages.append({
                     'role': 'tool',
@@ -348,8 +227,19 @@ def run_agent(
     if collected_results:
         summary_client = get_primary_client()
         try:
-            if collected_results:
-                return "\n\n".join(collected_results)
+            summary = summary_client.chat.completions.create(
+                model=model,
+                messages=[
+                    {
+                        'role': 'system',
+                        'content': 'Summarize this Premier League data clearly. Use markdown tables for stats.',
+                    },
+                    {
+                        'role': 'user',
+                        'content': f'Question: {user_message}\n\nData collected:\n{chr(10).join(collected_results[:3])}\n\nProvide a clear answer.',
+                    },
+                ],
+            )
             if summary.choices and summary.choices[0].message.content:
                 return summary.choices[0].message.content
         except Exception:
@@ -357,3 +247,5 @@ def run_agent(
         return '\n\n'.join(collected_results[:2])
 
     return run_fallback_agent(user_message, memory)
+
+

@@ -168,7 +168,7 @@ def get_standings() -> str:
             return 'The standings table is empty.'
 
         lines = [
-            f'Premier League Standings (Rank | Team | P | W | D | L | GD | Pts) {season_str}:\n'
+            f'Premier League Standings {season_str}:\n'
         ]
 
         for team in table[:20]:
@@ -230,56 +230,45 @@ def get_top_scorers() -> str:
         return f'Error parsing scorers: {str(e)}'
 
 
-
 def get_recent_results() -> str:
     data = api_get(
-        "/competitions/PL/matches?season=2025&status=FINISHED&limit=10"
+        '/competitions/PL/matches?season=2025&status=FINISHED&limit=10'
     )
 
     if not data:
-        return "Could not fetch results: API returned no data."
+        return 'Could not fetch results: API returned no data.'
 
-    if "error" in data:
-        return f"Could not fetch results: {data['error']}"
+    if 'error' in data:
+        return f'Could not fetch results: {data["error"]}'
 
     try:
-        matches = data.get("matches") or []
+        matches = data.get('matches') or []
 
         if not matches:
-            return "No recent results were returned."
+            return 'No recent results were returned.'
 
         lines = [
-            "Recent Premier League Results",
-            "-" * 40
+            'Recent Premier League Results:\n'
         ]
 
         for match in matches[-10:]:
-            home = (match.get("homeTeam") or {}).get("name", "Unknown")
-            away = (match.get("awayTeam") or {}).get("name", "Unknown")
-
-            score = (match.get("score") or {}).get("fullTime") or {}
-
-            hs = score.get("home")
-            aws = score.get("away")
-
-            if hs is None or aws is None:
-                continue
-
-            if hs > aws:
-                result = f"{home} beat {away} {hs}-{aws}"
-            elif aws > hs:
-                result = f"{away} beat {home} {aws}-{hs}"
-            else:
-                result = f"{home} drew {away} {hs}-{aws}"
+            home_team = match.get('homeTeam') or {}
+            away_team = match.get('awayTeam') or {}
+            score = match.get('score') or {}
+            full_time = score.get('fullTime') or {}
 
             lines.append(
-                f"{(match.get('utcDate') or '')[:10]} | {result}"
+                f'{(match.get("utcDate") or "")[:10]}: '
+                f'{home_team.get("name", "Unknown")} '
+                f'{full_time.get("home", 0)} - '
+                f'{full_time.get("away", 0)} '
+                f'{away_team.get("name", "Unknown")}'
             )
 
-        return "\n".join(lines)
+        return '\n'.join(lines)
 
     except Exception as e:
-        return f"Error parsing results: {str(e)}"
+        return f'Error parsing results: {str(e)}'
 
 
 def get_upcoming_fixtures() -> str:
