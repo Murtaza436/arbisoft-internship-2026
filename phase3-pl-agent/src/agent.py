@@ -5,11 +5,11 @@ from dotenv import load_dotenv
 from src.tools.registry import TOOLS, TOOL_MAP
 from src.memory import SessionMemory
 from src.hooks import pre_tool_hook, post_tool_hook
-from src.constants import RESET, BOLD, DIM
+from src.constants import RESET, DIM
 
 load_dotenv()
 
-DEFAULT_MODEL = 'nvidia/llama-3.3-nemotron-super-49b-v1:free'
+DEFAULT_MODEL = 'deepseek/deepseek-v4-flash'
 FALLBACK_MODEL = 'tinyllama:latest'
 
 SYSTEM_PROMPT = '''You are a Premier League football research assistant inspired by FotMob.
@@ -28,52 +28,43 @@ AVAILABLE TOOLS
 
 STRICT RULES
 
-? Always use tool results as the source of truth.
+You MUST answer every football question using one of the provided tools.
 
-? Never invent:
-  - seasons
-  - clubs
-  - scores
-  - standings
-  - transfers
-  - statistics
+Do not answer from memory.
 
-? If a tool returns no data, tell the user exactly that.
+Choose exactly one tool.
 
-? Never rewrite league tables into paragraphs.
+Wait for the tool output.
 
-? If a tool returns a table or list, preserve the ordering.
+Only after receiving tool output may you answer.
 
-? Never change match scores.
+Never call the same tool twice.
 
-? Never infer a winner from a draw.
+If the tool returns "No data", answer exactly that.
 
-? Never say a team won 1-1.
+Historical player questions:
+→ search_historical_stats
 
-? Never say a team won 5-8.
+Historical match questions:
+→ search_historical_stats
 
-? If a match is 1-1 it is a draw.
+Current standings:
+→ get_standings
 
-? If historical data is requested and no season is specified,
-search across every available historical season.
+Current top scorers:
+→ get_top_scorers
 
-? Never invent seasons such as
-Mohamed Salah 2015-16
-unless the user explicitly requested that season.
+Fixtures:
+→ get_upcoming_fixtures
 
-ALWAYS follow this order:
+Recent results:
+→ get_recent_results
 
-1. Decide which single tool best answers the user's question.
-2. Call ONLY that tool.
-3. Never call another tool unless the first tool explicitly failed.
-4. Never call the same tool twice.
-5. Never answer before reading the tool output.
-6. Use the tool output exactly as returned.
-7. Never use football knowledge from memory.
+Team schedule:
+→ get_team_matches
 
-? Keep answers factual.
-
-? Do not embellish or narrate statistics.
+Transfers/news:
+→ brave_search
 
 '''
 
@@ -256,12 +247,13 @@ def run_agent(
         iteration += 1
         try:
             response = client.chat.completions.create(
-            model=model,
-            messages=messages,
-            tools=TOOLS,
-            tool_choice="auto",
-            temperature=0,
-            top_p=0.9,
+                model=model,
+                messages=messages,
+                tools=TOOLS,
+                tool_choice="auto",
+                temperature=0,
+                top_p=0.9,
+                timeout=60,
         )
         except Exception as e:
             print("="*70)
@@ -303,11 +295,11 @@ def run_agent(
                 tool_name = tool_call.function.name
                 tool_call_counts[tool_name] = tool_call_counts.get(tool_name, 0) + 1
 
-                if tool_call_counts[tool_name] >= 1:
+                if tool_call_counts[tool_name] > 1:
                     messages.append({
-                        'role': 'tool',
-                        'tool_call_id': tool_call.id,
-                        'content': f'Already searched with {tool_name}. Use the results already collected to answer.',
+                        "role": "tool",
+                        "tool_call_id": tool_call.id,
+                        "content": f"Already searched with {tool_name}. Use the previous result.",
                     })
                     continue
 
@@ -329,7 +321,7 @@ def run_agent(
                 post_tool_hook(tool_name, result)
                 collected_results.append(result)
                 memory.add_fact(
-                    f"{tool_name}: {result[:300]}"
+                    f"{tool_name}: {result[:150]}"
                 )
 
                 messages.append({
@@ -346,14 +338,6 @@ def run_agent(
             break
 
     if collected_results:
-        summary_client = get_primary_client()
-        try:
-            if collected_results:
-                return "\n\n".join(collected_results)
-            if summary.choices and summary.choices[0].message.content:
-                return summary.choices[0].message.content
-        except Exception:
-            pass
-        return '\n\n'.join(collected_results[:2])
+            return "\n\n".join(collected_results)
 
     return run_fallback_agent(user_message, memory)

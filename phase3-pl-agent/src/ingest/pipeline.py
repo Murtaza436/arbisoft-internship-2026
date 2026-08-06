@@ -7,7 +7,7 @@ EMBEDDING_FN = SentenceTransformerEmbeddingFunction(
     model_name="all-MiniLM-L6-v2"
 )
 
-MATCH_COLLECTION = "pl_matches"
+MATCH_COLLECTION = "pl_history"
 
 PLAYER_COLLECTION = "pl_players"
 

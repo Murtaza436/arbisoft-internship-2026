@@ -6,405 +6,361 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_KEY = os.getenv('FOOTBALL_DATA_API_KEY')
-BASE_URL = 'https://api.football-data.org/v4'
+API_KEY = os.getenv("FOOTBALL_DATA_API_KEY")
+BASE_URL = "https://api.football-data.org/v4"
 
-CACHE_DIR = 'data/cache'
+CACHE_DIR = "data/cache"
 CACHE_DURATION_HOURS = 1
 
 
 def get_headers():
     if not API_KEY:
         return {}
-
-    return {
-        'X-Auth-Token': API_KEY
-    }
+    return {"X-Auth-Token": API_KEY}
 
 
-def cache_key(endpoint: str) -> str:
+def cache_key(endpoint: str):
     return (
-        endpoint
-        .replace('/', '_')
-        .replace('?', '_')
-        .replace('&', '_')
-        .replace('=', '_')
-        + '.json'
+        endpoint.replace("/", "_")
+        .replace("?", "_")
+        .replace("&", "_")
+        .replace("=", "_")
+        + ".json"
     )
 
 
 def get_cached(endpoint: str):
     os.makedirs(CACHE_DIR, exist_ok=True)
 
-    cache_file = os.path.join(
-        CACHE_DIR,
-        cache_key(endpoint)
-    )
+    filename = os.path.join(CACHE_DIR, cache_key(endpoint))
 
-    if os.path.exists(cache_file):
-        try:
-            modified = datetime.fromtimestamp(
-                os.path.getmtime(cache_file)
-            )
+    if not os.path.exists(filename):
+        return None
 
-            if (
-                datetime.now() - modified
-                < timedelta(hours=CACHE_DURATION_HOURS)
-            ):
-                with open(
-                    cache_file,
-                    'r',
-                    encoding='utf-8'
-                ) as f:
-                    return json.load(f)
+    try:
+        modified = datetime.fromtimestamp(os.path.getmtime(filename))
 
-        except Exception:
+        if datetime.now() - modified > timedelta(hours=CACHE_DURATION_HOURS):
             return None
 
-    return None
+        with open(filename, "r", encoding="utf-8") as f:
+            return json.load(f)
+
+    except Exception:
+        return None
 
 
 def save_cache(endpoint: str, data: dict):
     os.makedirs(CACHE_DIR, exist_ok=True)
 
-    cache_file = os.path.join(
-        CACHE_DIR,
-        cache_key(endpoint)
-    )
+    filename = os.path.join(CACHE_DIR, cache_key(endpoint))
 
     try:
-        with open(
-            cache_file,
-            'w',
-            encoding='utf-8'
-        ) as f:
+        with open(filename, "w", encoding="utf-8") as f:
             json.dump(data, f)
     except Exception:
         pass
 
 
-def api_get(endpoint: str) -> dict:
+def api_get(endpoint: str):
+
     if not API_KEY:
-        return {
-            'error': (
-                'FOOTBALL_DATA_API_KEY is missing '
-                'from the .env file.'
-            )
-        }
+        return {"error": "FOOTBALL_DATA_API_KEY missing"}
 
     cached = get_cached(endpoint)
 
     if cached is not None:
         return cached
 
-    url = f'{BASE_URL}{endpoint}'
-
     try:
         response = requests.get(
-            url,
+            f"{BASE_URL}{endpoint}",
             headers=get_headers(),
-            timeout=15
+            timeout=15,
         )
 
-        if response.status_code == 200:
-            data = response.json()
+        if response.status_code != 200:
+            return {
+                "error": f"HTTP {response.status_code}: {response.text[:250]}"
+            }
 
-            if data is None:
-                return {
-                    'error': 'API returned an empty response.'
-                }
+        data = response.json()
 
-            save_cache(endpoint, data)
-            return data
+        save_cache(endpoint, data)
 
-        return {
-            'error': (
-                f'API returned HTTP '
-                f'{response.status_code}: '
-                f'{response.text[:300]}'
-            )
-        }
-
-    except requests.RequestException as e:
-        return {
-            'error': f'Network/API request failed: {str(e)}'
-        }
+        return data
 
     except Exception as e:
-        return {
-            'error': f'Unexpected API error: {str(e)}'
-        }
+        return {"error": str(e)}
 
 
-def get_standings() -> str:
-    data = api_get('/competitions/PL/standings')
+# ===========================================================
+# CURRENT STANDINGS
+# ===========================================================
 
-    if not data:
-        return 'Could not fetch standings: API returned no data.'
+def get_standings():
 
-    if 'error' in data:
-        return f'Could not fetch standings: {data["error"]}'
+    data = api_get("/competitions/PL/standings")
+
+    if "error" in data:
+        return f"Could not fetch standings.\n{data['error']}"
 
     try:
-        season = data.get('season') or {}
 
-        start_date = season.get('startDate') or ''
-        end_date = season.get('endDate') or ''
+        table = data["standings"][0]["table"]
 
-        season_str = (
-            f'{start_date[:4]}-{end_date[:4]}'
-            if start_date and end_date
-            else 'Current Season'
+        season = data.get("season", {})
+
+        season_string = (
+            f"{season.get('startDate','')[:4]}-{season.get('endDate','')[:4]}"
         )
 
-        standings_list = data.get('standings') or []
-
-        if not standings_list:
-            return 'No standings data was returned by the API.'
-
-        table = standings_list[0].get('table') or []
-
-        if not table:
-            return 'The standings table is empty.'
-
-        lines = [
-            f'Premier League Standings (Rank | Team | P | W | D | L | GD | Pts) {season_str}:\n'
+        output = [
+            f"# Premier League Standings ({season_string})",
+            ""
         ]
 
-        for team in table[:20]:
-            team_data = team.get('team') or {}
+        for club in table:
 
-            lines.append(
-                f'{team.get("position", "N/A")}. '
-                f'{team_data.get("name", "Unknown Team")} | '
-                f'Pts: {team.get("points", 0)} | '
-                f'P: {team.get("playedGames", 0)} '
-                f'W: {team.get("won", 0)} '
-                f'D: {team.get("draw", 0)} '
-                f'L: {team.get("lost", 0)} | '
-                f'GD: {team.get("goalDifference", 0)}'
+            output.append(
+                f"{club['position']}. "
+                f"{club['team']['name']} | "
+                f"Pts {club['points']} | "
+                f"P {club['playedGames']} | "
+                f"W {club['won']} | "
+                f"D {club['draw']} | "
+                f"L {club['lost']} | "
+                f"GD {club['goalDifference']}"
             )
 
-        return '\n'.join(lines)
+        return "\n".join(output)
 
     except Exception as e:
-        return f'Error parsing standings: {str(e)}'
+        return f"Error parsing standings: {e}"
 
 
-def get_top_scorers() -> str:
+# ===========================================================
+# TOP SCORERS
+# ===========================================================
+
+def get_top_scorers():
+
     data = api_get(
-    '/competitions/PL/scorers?season=2025&limit=10'
+        "/competitions/PL/scorers?season=2025&limit=10"
     )
-    if not data:
-        return 'Could not fetch scorers: API returned no data.'
 
-    if 'error' in data:
-        return f'Could not fetch scorers: {data["error"]}'
+    if "error" in data:
+        return f"Could not fetch top scorers.\n{data['error']}"
 
     try:
-        scorers = data.get('scorers') or []
+
+        scorers = data.get("scorers", [])
 
         if not scorers:
-            return 'No top scorer data was returned.'
+            return "No top scorer data was returned."
 
-        lines = [
-            'Premier League Top Scorers '
-            '(2025-26 Season):\n'
+        output = [
+            "# Premier League Top Scorers (2025-26)",
+            ""
         ]
 
-        for i, scorer in enumerate(scorers, 1):
-            player = scorer.get('player') or {}
-            team = scorer.get('team') or {}
+        for i, scorer in enumerate(scorers, start=1):
 
-            lines.append(
-                f'{i}. '
-                f'{player.get("name", "Unknown Player")} '
-                f'({team.get("name", "Unknown Team")}) | '
-                f'Goals: {scorer.get("goals", 0)} | '
-                f'Assists: {scorer.get("assists", 0)}'
+            player = scorer.get("player", {})
+            team = scorer.get("team", {})
+
+            output.append(
+                f"""## {i}. {player.get('name','Unknown')}
+
+Club: {team.get('name','Unknown')}
+
+Goals: {scorer.get('goals',0)}
+
+Assists: {scorer.get('assists',0)}
+"""
             )
 
-        return '\n'.join(lines)
+        return "\n".join(output)
 
     except Exception as e:
-        return f'Error parsing scorers: {str(e)}'
+        return f"Error parsing scorers: {e}"
+    
+# ===========================================================
+# RECENT RESULTS
+# ===========================================================
 
+def get_recent_results():
 
-
-def get_recent_results() -> str:
     data = api_get(
         "/competitions/PL/matches?season=2025&status=FINISHED&limit=10"
     )
 
-    if not data:
-        return "Could not fetch results: API returned no data."
-
     if "error" in data:
-        return f"Could not fetch results: {data['error']}"
+        return f"Could not fetch results.\n{data['error']}"
 
     try:
-        matches = data.get("matches") or []
+
+        matches = data.get("matches", [])
 
         if not matches:
             return "No recent results were returned."
 
-        lines = [
-            "Recent Premier League Results",
-            "-" * 40
-        ]
+        output = ["# Recent Premier League Results", ""]
 
         for match in matches[-10:]:
-            home = (match.get("homeTeam") or {}).get("name", "Unknown")
-            away = (match.get("awayTeam") or {}).get("name", "Unknown")
 
-            score = (match.get("score") or {}).get("fullTime") or {}
+            home = match["homeTeam"]["name"]
+            away = match["awayTeam"]["name"]
 
-            hs = score.get("home")
-            aws = score.get("away")
+            score = match["score"]["fullTime"]
 
-            if hs is None or aws is None:
-                continue
+            hs = score["home"]
+            aws = score["away"]
 
             if hs > aws:
-                result = f"{home} beat {away} {hs}-{aws}"
+                result = f"{home} won"
             elif aws > hs:
-                result = f"{away} beat {home} {aws}-{hs}"
+                result = f"{away} won"
             else:
-                result = f"{home} drew {away} {hs}-{aws}"
+                result = "Draw"
 
-            lines.append(
-                f"{(match.get('utcDate') or '')[:10]} | {result}"
+            date = (match.get("utcDate") or "")[:10]
+
+            output.append(
+                f"""### {date}
+
+{home} {hs}-{aws} {away}
+
+Result: {result}
+"""
             )
 
-        return "\n".join(lines)
+        return "\n".join(output)
 
     except Exception as e:
-        return f"Error parsing results: {str(e)}"
+        return f"Error parsing recent results: {e}"
 
 
-def get_upcoming_fixtures() -> str:
+# ===========================================================
+# UPCOMING FIXTURES
+# ===========================================================
+
+def get_upcoming_fixtures():
+
     data = api_get(
-        '/competitions/PL/matches?status=SCHEDULED&limit=10'
+        "/competitions/PL/matches?status=SCHEDULED&limit=10"
     )
 
-    if not data:
-        return 'Could not fetch fixtures: API returned no data.'
-
-    if 'error' in data:
-        return f'Could not fetch fixtures: {data["error"]}'
+    if "error" in data:
+        return f"Could not fetch fixtures.\n{data['error']}"
 
     try:
-        matches = data.get('matches') or []
+
+        matches = data.get("matches", [])
 
         if not matches:
-            return 'No upcoming fixtures were returned.'
+            return "No upcoming fixtures were returned."
 
-        lines = [
-            'Upcoming Premier League Fixtures:\n'
-        ]
+        output = ["# Upcoming Premier League Fixtures", ""]
 
         for match in matches[:10]:
-            home_team = match.get('homeTeam') or {}
-            away_team = match.get('awayTeam') or {}
 
-            lines.append(
-                f'{(match.get("utcDate") or "")[:10]}: '
-                f'{home_team.get("name", "Unknown")} vs '
-                f'{away_team.get("name", "Unknown")}'
+            home = match["homeTeam"]["name"]
+            away = match["awayTeam"]["name"]
+
+            date = (match.get("utcDate") or "")[:10]
+
+            output.append(
+                f"""### {date}
+
+{home}
+
+vs
+
+{away}
+"""
             )
 
-        return '\n'.join(lines)
+        return "\n".join(output)
 
     except Exception as e:
-        return f'Error parsing fixtures: {str(e)}'
+        return f"Error parsing fixtures: {e}"
 
 
-def get_team_matches(team_name: str) -> str:
-    if not team_name or not team_name.strip():
-        return 'Please provide a team name.'
+# ===========================================================
+# TEAM MATCHES
+# ===========================================================
 
-    data = api_get(
-        '/competitions/PL/matches?limit=50'
-    )
+def get_team_matches(team_name: str):
 
-    if not data:
-        return 'Could not fetch matches: API returned no data.'
+    if not team_name.strip():
+        return "Please provide a team name."
 
-    if 'error' in data:
-        return f'Could not fetch matches: {data["error"]}'
+    data = api_get("/competitions/PL/matches?limit=50")
+
+    if "error" in data:
+        return f"Could not fetch team matches.\n{data['error']}"
 
     try:
-        matches = data.get('matches') or []
 
-        team_name_lower = team_name.lower()
+        matches = data.get("matches", [])
 
-        team_matches = []
-
-        for match in matches:
-            home_team = match.get('homeTeam') or {}
-            away_team = match.get('awayTeam') or {}
-
-            home_name = home_team.get('name', '')
-            away_name = away_team.get('name', '')
-
-            if (
-                team_name_lower in home_name.lower()
-                or team_name_lower in away_name.lower()
-            ):
-                team_matches.append(match)
-
-        if not team_matches:
-            return f'No matches found for {team_name}'
-
-        lines = [
-            f'Matches for {team_name}:\n'
+        output = [
+            f"# Matches for {team_name}",
+            ""
         ]
 
-        for match in team_matches[:10]:
-            home_team = match.get('homeTeam') or {}
-            away_team = match.get('awayTeam') or {}
+        found = False
 
-            home = home_team.get('name', 'Unknown')
-            away = away_team.get('name', 'Unknown')
+        for match in matches:
 
-            date = (
-                match.get('utcDate') or ''
-            )[:10]
+            home = match["homeTeam"]["name"]
+            away = match["awayTeam"]["name"]
 
-            status = match.get(
-                'status',
-                'UNKNOWN'
-            )
+            if (
+                team_name.lower() not in home.lower()
+                and team_name.lower() not in away.lower()
+            ):
+                continue
 
-            if status == 'FINISHED':
-                score = match.get('score') or {}
-                full_time = score.get(
-                    'fullTime'
-                ) or {}
+            found = True
 
-                hs = full_time.get(
-                    'home',
-                    0
-                )
+            date = (match.get("utcDate") or "")[:10]
+            status = match.get("status", "")
 
-                aws = full_time.get(
-                    'away',
-                    0
-                )
+            if status == "FINISHED":
 
-                lines.append(
-                    f'{date}: '
-                    f'{home} {hs}-{aws} {away}'
+                score = match["score"]["fullTime"]
+
+                hs = score["home"]
+                aws = score["away"]
+
+                output.append(
+                    f"""### {date}
+
+{home} {hs}-{aws} {away}
+"""
                 )
 
             else:
-                lines.append(
-                    f'{date}: '
-                    f'{home} vs {away} '
-                    f'({status})'
+
+                output.append(
+                    f"""### {date}
+
+{home}
+
+vs
+
+{away}
+
+Status: {status}
+"""
                 )
 
-        return '\n'.join(lines)
+        if not found:
+            return f"No matches found for {team_name}."
+
+        return "\n".join(output)
 
     except Exception as e:
-        return f'Error: {str(e)}'
+        return f"Error parsing team matches: {e}"
