@@ -1,605 +1,106 @@
 {
   "facts": [
-    "Used get_standings for: Who is top of the Premier League right now?",
-    "Used get_top_scorers for: Who is the leading scorer this season?",
-    "Used search_historical_stats for: Who is the leading scorer this season?",
-    "Used get_recent_results for: What were the most recent Premier League results?",
-    "Used search_historical_stats for: How did Jamie Vardy perform in the 2015-16 Premier",
-    "Used search_historical_stats for: Tell me about Harry Kane stats in 2015-16",
-    "Used search_historical_stats for: How many goals did Sergio Aguero score in 2015-16?",
-    "Used brave_search for: What is the latest Premier League transfer news?",
-    "Used brave_search for: Any recent injury news for top Premier League club",
-    "Used get_top_scorers for: Compare Jamie Vardy 2015-16 historical stats with ",
-    "Used search_historical_stats for: Compare Jamie Vardy 2015-16 historical stats with "
+    "search_historical_stats: | Season   | Competition    | Matchday      | Home              | Score   | Away                 | Winner            |\n|:---------|:---------------|:-",
+    "brave_search: # Latest Premier League News\nSearch: current Premier League standings 2026-27\n\n\n## 2026-27 English Premier League Standings - ESPN\n\n**Published:** Unk",
+    "brave_search: # Latest Premier League News\nSearch: Leicester City 2015-16 Premier League champions final points total record\n\n\n## 2015\u201316 Leicester City F.C. season",
+    "brave_search: # Latest Premier League News\nSearch: Premier League fewest goals conceded each season 2015-16 2016-17 2017-18 2018-19 2019-20 2020-21 2021-22 best def",
+    "search_historical_stats: | Season   | Competition    | Matchday      | Home              | Score   | Away              | Winner            |\n|:---------|:---------------|:----",
+    "get_standings: # Premier League Standings (2026-2027)\n\n1. Arsenal FC | Pts 85 | P 38 | W 26 | D 7 | L 5 | GD 44\n2. Manchester City FC | Pts 78 | P 38 | W 23 | D 9 |",
+    "search_historical_stats: | Season   | Competition    | Matchday      | Home                   | Score   | Away                   | Winner    |\n|:---------|:---------------|:--",
+    "get_top_scorers: # Premier League Top Scorers (2025-26)\n\n## 1. Erling Haaland\n\nClub: Manchester City FC\n\nGoals: 27\n\nAssists: 8\n\n## 2. Thiago\n\nClub: Brentford FC\n\nGoals",
+    "search_historical_stats: # PLAYER CAREER SUMMARY\n\n| Player        |   Games |   Minutes |   Goals |   Assists |   Yellow Cards |   Red Cards |\n|:--------------|--------:|-----",
+    "brave_search: # Latest Premier League News\nSearch: Wolverhampton Wanderers transfer news latest 2026 summer\n\n\n## 2026 Wolverhampton Wanderers Transfers - ESPN\n\n**Pu",
+    "search_historical_stats: | Season   | Competition    | Matchday      | Home              | Score   | Away                 | Winner         |\n|:---------|:---------------|:----",
+    "brave_search: # Latest Premier League News\nSearch: Leicester City 2015-16 Premier League final points 81 wins draws losses goals for against\n\n\n## 2015\u201316 Leicester",
+    "get_team_matches: # Matches for Arsenal\n\n### 2026-08-21\n\nArsenal FC\n\nvs\n\nCoventry City FC\n\nStatus: SCHEDULED\n\n### 2026-08-31\n\nAston Villa FC\n\nvs\n\nArsenal FC\n\nStatus: SC",
+    "brave_search: # Latest Premier League News\nSearch: Manchester City transfer news latest summer 2026\n\n\n## Man City transfer news, rumours and gossip: Live updates an",
+    "get_team_matches: # Matches for Liverpool\n\n### 2026-08-23\n\nNewcastle United FC\n\nvs\n\nLiverpool FC\n\nStatus: SCHEDULED\n\n### 2026-08-29\n\nLiverpool FC\n\nvs\n\nNottingham Forest",
+    "search_historical_stats: # PLAYER CAREER SUMMARY\n\n| Player      |   Games |   Minutes |   Goals |   Assists |   Yellow Cards |   Red Cards |\n|:------------|--------:|---------",
+    "brave_search: # Latest Premier League News\nSearch: Liverpool 2019-20 Premier League final points 99 wins 32 draws 3 losses 1 goals for 85 goals against 33\n\n\n## 2019",
+    "brave_search: # Latest Premier League News\nSearch: Wolverhampton Wanderers transfer news latest summer 2026\n\n\n## 2026 Wolverhampton Wanderers Transfers - ESPN\n\n**Pu",
+    "search_historical_stats:  Season    Competition      Matchday              Home Score                 Away         Winner\n2015-16 Premier League \u25aa Matchday 25   Manchester Cit",
+    "search_historical_stats: # PLAYER CAREER SUMMARY\n\n     Player  Games  Minutes  Goals  Assists  Yellow Cards  Red Cards\nEden Hazard     37     2935     16       15"
   ],
   "conversation_history": [
     {
       "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
+      "content": "When do Liverpool play next?"
     },
     {
       "role": "assistant",
-      "content": "Premier League Standings 2025-2026:\n\n1. Arsenal FC | Pts: 85 | P:38 W:26 D:7 L:5 | GD:44\n2. Manchester City FC | Pts: 78 | P:38 W:23 D:9 L:6 | GD:42\n3. Manchester United FC | Pts: 71 | P:38 W:20 D:11 L:7 | GD:19\n4. Aston Villa FC | Pts: 65 | P:38 W:19 D:8 L:11 | GD:7\n5. Liverpool FC | Pts: 60 | P:38 W:17 D:9 L:12 | GD:10\n6. AFC Bournemouth | Pts: 57 | P:38 W:13 D:18 L:7 | GD:4\n7. Sunderland AFC | Pts: 54 | P:38 W:14 D:12 L:12 | GD:-6\n8. Brighton & Hove Albion FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:6\n9. Brentford FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:3\n10. Chelsea FC | Pts: 52 | P:38 W:14 D:10 L:14 | GD:6\n11. Fulham FC | Pts: 52 | P:38 W:15 D:7 L:16 | GD:-4\n12. Newcastle United FC | Pts: 49 | P:38 W:14 D:7 L:17 | GD:-2\n13. Everton FC | Pts: 49 | P:38 W:13 D:10 L:15 | GD:-3\n14. Leeds United FC | Pts: 47 | P:38 W:11 D:14 L:13 | GD:-7\n15. Crystal Palace FC | Pts: 45 | P:38 W:11 D:12 L:15 | GD:-10\n16. Nottingham Forest FC | Pts: 44 | P:38 W:11 D:11 L:16 | GD:-3\n17. Tottenham Hotspur FC | Pts: 41 | P:38 W:10 D:11 L:17 | GD:-9\n18. West Ham United FC | Pts: 39 | P:38 W:10 D:9 L:19 | GD:-19\n19. Burnley FC | Pts: 22 | P:38 W:4 D:10 L:24 | GD:-37\n20. Wolverhampton Wanderers FC | Pts: 20 | P:38 W:3 D:11 L:24 | GD:-41"
+      "content": "## \ud83d\udd34 Liverpool \u2014 Next Match\n\n| Date | Match | Venue | Competition |\n|:---:|:-----:|:-----:|:----------:|\n| **\ud83d\udcc5 23 August 2026** | **Newcastle United** \ud83c\udd9a **Liverpool** | \ud83c\udfdf\ufe0f St. James' Park (Away) | Premier League |\n\n---\n\n### \ud83d\udccb Next 5 Fixtures\n\n| Date | Match | Venue |\n|:---:|:-----:|:-----:|\n| **23 Aug** | Newcastle \ud83c\udd9a **Liverpool** | \ud83c\udfdf\ufe0f Away |\n| **29 Aug** | **Liverpool** \ud83c\udd9a Nottingham Forest | \ud83c\udfdf\ufe0f Home |\n| **4 Sep** | Ipswich \ud83c\udd9a **Liverpool** | \ud83c\udfdf\ufe0f Away |\n| **12 Sep** | **Liverpool** \ud83c\udd9a Fulham | \ud83c\udfdf\ufe0f Home |\n| **20 Sep** | Bournemouth \ud83c\udd9a **Liverpool** | \ud83c\udfdf\ufe0f Away |\n\nLiverpool's next game is away to **Newcastle United** at St. James' Park on **23 August 2026**! \ud83d\udd34\u26bd"
     },
     {
       "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
+      "content": "Which club has had the strongest defensive record historically between 2015 and 2022?"
     },
     {
       "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0\n\nPremier League Historical Stats - Who is the leading scorer this season?\n\nBased on 10 relevant match records from StatsBomb data\n\nPlayer: Pedro Eliezer Rodr\u00edguez Ledesma\nSeasons in data: 2015/2016\nMatches found: 6\nTotal Goals: 3\nTotal Assists: 0\nTotal Shots: 13\nTotal Shots on Target: 5\nTotal Passes Completed: 164\nShot Conversion Rate: 23.1%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
+      "content": "# Latest Premier League News\nSearch: Premier League fewest goals conceded each season 2015-16 2016-17 2017-18 2018-19 2019-20 2020-21 2021-22 best defence\n\n\n## Fewest Goals Conceded in a Premier League Season | Opta Analyst\n\n**Published:** November 1, 2025\n\n**Summary**\n\n15 goals conceded \u2013 Chelsea, 2004-05 17 \u2013 Arsenal, 1998-99 22 \u2013 Chelsea, 2005-06 22 \u2013 Manchester United, 2007-08 22 \u2013 Liverpool, 2018-19 23 \u2013 Manchester City, 2018-19 24 \u2013 Chelsea, 2006-07 24 \u2013 Chelsea, 2008-09 24 \u2013 Manchester United, 2008-09 25 \u2013 Liverpool, 2005-06\n\n**Source**\n\nhttps://theanalyst.com/articles/fewest-goals-conceded-in-a-premier-league-season\n\n---\n\n\n## The 10 teams with the fewest goals conceded in a Premier League season ranked\n\n**Published:** November 1, 2025\n\n**Summary**\n\nFrom <strong>Jose Mourinho&#x27;s Chelsea to Man City under Pep Guardiola</strong>, a look at the ten teams who have conceded the least goals in a Premier League season.\n\n**Source**\n\nhttps://www.givemesport.com/fewest-goals-conceded-premier-league-season-ranked/\n\n---\n\n\n## Fewest Goals Conceded In A Premier League Season\n\n**Published:** April 5, 2025\n\n**Summary**\n\nJust <strong>23 goals</strong> were conceded along the away and though this was the sixth best defensive season in Premier League history, it still wasn\u2019t the fewest goals conceded that term. We really are talking here about two very special teams.\n\n**Source**\n\nhttps://www.888sport.com/blog/fewest-goals-conceded-in-a-premier-league-season\n\n---\n\n\n## Least Goals Conceded In A Premier League Season | StatMuse\n\n**Published:** Unknown\n\n**Summary**\n\n<strong>Chelsea have conceded the fewest goals by a club in the Premier League in a season, with 15 goals conceded in 2004-05</strong>.\n\n**Source**\n\nhttps://www.statmuse.com/fc/ask/least-goals-conceded-in-a-premier-league-season\n\n---\n\n\n## Best & Worst Premier League Defences | Anyseats\n\n**Published:** May 17, 2026\n\n**Summary**\n\nOver the league&#x27;s 33-season history, the team with the fewest goals conceded has lifted the title in roughly two thirds of seasons \u2014 <strong>Liverpool, Manchester City, Chelsea, Manchester United and Arsenal</strong> between them have repeatedly built championship ...\n\n**Source**\n\nhttps://anyseats.net/blog/best-worst-defense-teams-premier-league\n\n---\n\n\n| Season   | Competition    | Matchday      | Home              | Score   | Away              | Winner            |\n|:---------|:---------------|:--------------|:------------------|:--------|:------------------|:------------------|\n| 2015-16  | Premier League | \u25aa Matchday 15 | Chelsea           | 0-1     | AFC Bournemouth   | AFC Bournemouth   |\n| 2015-16  | Premier League | \u25aa Matchday 32 | AFC Bournemouth   | 0-4     | Manchester City   | Manchester City   |\n| 2015-16  | Premier League | \u25aa Matchday 17 | Everton           | 2-3     | Leicester City    | Leicester City    |\n| 2015-16  | Premier League | \u25aa Matchday 31 | Tottenham Hotspur | 3-0     | AFC Bournemouth   | Tottenham Hotspur |\n| 2015-16  | Premier League | \u25aa Matchday 37 | Leicester City    | 3-1     | Everton           | Leicester City    |\n| 2015-16  | Premier League | \u25aa Matchday 10 | AFC Bournemouth   | 1-5     | Tottenham Hotspur | Tottenham Hotspur |\n| 2015-16  | Premier League | \u25aa Matchday 15 | Swansea City      | 0-3     | Leicester City    | Leicester City    |\n| 2015-16  | Premier League | \u25aa Matchday 9  | Chelsea           | 2-0     | Aston Villa       | Chelsea           |\n| 2015-16  | Premier League | \u25aa Matchday 34 | Chelsea           | 0-3     | Manchester City   | Manchester City   |\n| 2015-16  | Premier League | \u25aa Matchday 11 | Chelsea           | 1-3     | Liverpool         | Liverpool         |\n| 2015-16  | Premier League | \u25aa Matchday 20 | Leicester City    | 0-0     | AFC Bournemouth   | Draw              |\n| 2015-16  | Premier League | \u25aa Matchday 15 | Arsenal           | 3-1     | Sunderland AFC    | Arsenal           |\n| 2015-16  | Premier League | \u25aa Matchday 4  | AFC Bournemouth   | 1-1     | Leicester City    | Draw              |\n| 2015-16  | Premier League | \u25aa Matchday 35 | Leicester City    | 4-0     | Swansea City      | Leicester City    |\n| 2015-16  | Premier League | \u25aa Matchday 14 | AFC Bournemouth   | 3-3     | Everton           | Draw              |\n| 2015-16  | Premier League | \u25aa Matchday 38 | Arsenal           | 4-0     | Aston Villa       | Arsenal           |\n| 2015-16  | Premier League | \u25aa Matchday 38 | Newcastle United  | 5-1     | Tottenham Hotspur | Newcastle United  |\n| 2015-16  | Premier League | \u25aa Matchday 36 | Everton           | 2-1     | AFC Bournemouth   | Everton           |\n| 2015-16  | Premier League | \u25aa Matchday 9  | Manchester City   | 5-1     | AFC Bournemouth   | Manchester City   |\n| 2015-16  | Premier League | \u25aa Matchday 15 | Newcastle United  | 2-0     | Liverpool         | Newcastle United  |\n| 2015-16  | Premier League | \u25aa Matchday 38 | Chelsea           | 1-1     | Leicester City    | Draw              |\n| 2015-16  | Premier League | \u25aa Matchday 14 | Liverpool         | 1-0     | Swansea City      | Liverpool         |\n| 2015-16  | Premier League | \u25aa Matchday 35 | AFC Bournemouth   | 1-4     | Chelsea           | Chelsea           |\n| 2015-16  | Premier League | \u25aa Matchday 33 | Swansea City      | 1-0     | Chelsea           | Swansea City      |\n| 2015-16  | Premier League | \u25aa Matchday 34 | AFC Bournemouth   | 1-2     | Liverpool         | Liverpool         |"
     },
     {
       "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
+      "content": "Eden Hazard 2018"
     },
     {
       "role": "assistant",
-      "content": "Recent Premier League Results 2025-26:\n\n2026-05-24: Sunderland AFC 2 - 1 Chelsea FC\n2026-05-24: Brighton & Hove Albion FC 0 - 3 Manchester United FC\n2026-05-24: Crystal Palace FC 1 - 2 Arsenal FC\n2026-05-24: Burnley FC 1 - 1 Wolverhampton Wanderers FC\n2026-05-24: Fulham FC 2 - 0 Newcastle United FC\n2026-05-24: Liverpool FC 1 - 1 Brentford FC\n2026-05-24: Manchester City FC 1 - 2 Aston Villa FC\n2026-05-24: Nottingham Forest FC 1 - 1 AFC Bournemouth\n2026-05-24: Tottenham Hotspur FC 1 - 0 Everton FC\n2026-05-24: West Ham United FC 3 - 0 Leeds United FC"
+      "content": "## \ud83c\udde7\ud83c\uddea Eden Hazard \u2014 Chelsea 2018 Season\n\n| Stat | Value |\n|:---|:-----:|\n| \ud83c\udfc6 **Competition** | Premier League |\n| \u26bd **Goals** | **16** |\n| \ud83c\udd70\ufe0f **Assists** | **15** |\n| \ud83c\udfaf **Total Involvements** | **31** |\n| \ud83d\udcc5 **Games Played** | **37** |\n| \u23f1\ufe0f **Minutes** | **2,935** |\n| \u26bd **Goals per Game** | **0.43** |\n| \ud83c\udfaf **Involvements per Game** | **0.84** |\n| \ud83d\udfe8 **Yellow Cards** | 2 |\n| \ud83d\udfe5 **Red Cards** | 0 |\n\n---\n\n### \ud83d\udd25 Highlights\n\n- **16 goals** \u2014 his best-ever Premier League goal tally in a single season\n- **15 assists** \u2014 the most he ever registered in a single campaign\n- **31 total involvements** \u2014 direct involvement in nearly a goal per game\n- **Played 37 of 38 matches** \u2014 remarkably consistent availability\n- \ud83c\udfc5 Won the **FA Cup** that season\n- \ud83c\udf1f Selected in the **PFA Team of the Year**\n\n### \ud83d\udcac Summary\n\nEden Hazard's **2018 season** was arguably his **finest in a Chelsea shirt** \u2014 contributing **31 goals and assists** across 37 appearances. His **15 assists** in particular highlight his creative brilliance at his peak. The Belgian magician was unplayable at times! \u2728\ud83d\udd35"
     },
     {
       "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
+      "content": "Compare Liverpool's current league position with their 2019-20 title-winning season."
     },
     {
       "role": "assistant",
-      "content": "Premier League Standings 2025-2026:\n\n1. Arsenal FC | Pts: 85 | P:38 W:26 D:7 L:5 | GD:44\n2. Manchester City FC | Pts: 78 | P:38 W:23 D:9 L:6 | GD:42\n3. Manchester United FC | Pts: 71 | P:38 W:20 D:11 L:7 | GD:19\n4. Aston Villa FC | Pts: 65 | P:38 W:19 D:8 L:11 | GD:7\n5. Liverpool FC | Pts: 60 | P:38 W:17 D:9 L:12 | GD:10\n6. AFC Bournemouth | Pts: 57 | P:38 W:13 D:18 L:7 | GD:4\n7. Sunderland AFC | Pts: 54 | P:38 W:14 D:12 L:12 | GD:-6\n8. Brighton & Hove Albion FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:6\n9. Brentford FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:3\n10. Chelsea FC | Pts: 52 | P:38 W:14 D:10 L:14 | GD:6\n11. Fulham FC | Pts: 52 | P:38 W:15 D:7 L:16 | GD:-4\n12. Newcastle United FC | Pts: 49 | P:38 W:14 D:7 L:17 | GD:-2\n13. Everton FC | Pts: 49 | P:38 W:13 D:10 L:15 | GD:-3\n14. Leeds United FC | Pts: 47 | P:38 W:11 D:14 L:13 | GD:-7\n15. Crystal Palace FC | Pts: 45 | P:38 W:11 D:12 L:15 | GD:-10\n16. Nottingham Forest FC | Pts: 44 | P:38 W:11 D:11 L:16 | GD:-3\n17. Tottenham Hotspur FC | Pts: 41 | P:38 W:10 D:11 L:17 | GD:-9\n18. West Ham United FC | Pts: 39 | P:38 W:10 D:9 L:19 | GD:-19\n19. Burnley FC | Pts: 22 | P:38 W:4 D:10 L:24 | GD:-37\n20. Wolverhampton Wanderers FC | Pts: 20 | P:38 W:3 D:11 L:24 | GD:-41"
+      "content": "## \ud83d\udd34 Liverpool: 2019-20 Title Winners vs Current 2026-27 Season\n\n| Stat | 2019-20 \ud83c\udfc6 | 2026-27 \ud83d\udcc9 | Difference |\n|:---|:---------:|:---------:|:----------:|\n| **League Position** | **1st \ud83e\udd47** | **5th** | \u2b07\ufe0f -4 places |\n| **Points** | **99** | **60** | \u2b07\ufe0f -39 pts |\n| **Wins** | **32** | **17** | \u2b07\ufe0f -15 |\n| **Draws** | **3** | **9** | \u2b06\ufe0f +6 |\n| **Losses** | **3** | **12** | \u2b06\ufe0f +9 |\n| **Goals For** \u26bd | **85** | \u2014 | \u2014 |\n| **Goals Against** \ud83d\udee1\ufe0f | **33** | \u2014 | \u2014 |\n| **Goal Difference** | **+52** | **+10** | \u2b07\ufe0f -42 |\n\n---\n\n### \ud83d\udcca Tale of Two Seasons\n\n| Category | 2019-20 \ud83c\udfc6 | 2026-27 |\n|:---------|:---------:|:-------:|\n| \ud83c\udfc5 **Position** | Champions \ud83e\udd47 | Mid-table (5th) |\n| \ud83d\udcc8 **Points per Game** | **2.61** | **1.58** |\n| \u26bd **Goals per Game** | **2.24** | \u2014 |\n| \ud83d\udee1\ufe0f **Conceded per Game** | **0.87** | \u2014 |\n| \ud83c\udfe0 **Home Record** | **18-1-0** (55 pts) | \u2014 |\n| \ud83d\udee3\ufe0f **Away Record** | **14-2-3** (44 pts) | \u2014 |\n| \u274c **Total Defeats** | **Just 3** | **12** (4x more) |\n\n---\n\n### \ud83d\udcac Summary\n\nThe contrast is stark:\n\n- **2019-20** \u2014 **Dominant champions** \ud83d\udd25 99 points, just **3 defeats all season**, a **+52 goal difference**, and a **club record points haul**. They won the league by **18 points**.\n- **2026-27** \u2014 **5th place** with **60 points**, **12 defeats**, and a modest **+10 goal difference** \u2014 a drop of **39 points** from the title-winning campaign.\n\nLiverpool went from **one of the greatest Premier League seasons ever** (99 pts, 32 wins) to a **mid-table finish** \u2014 a massive fall from grace in just 7 years. The 2019-20 Reds lost only **3 games all season**; the current side has lost **12** \ud83d\ude2c"
     },
     {
       "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
+      "content": "Compare Mohamed Salah's 2017-18 record season with the current Golden Boot race."
     },
     {
       "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0"
+      "content": "## \ud83d\udc51 Mohamed Salah (2017-18) vs Current Golden Boot Race (2025-26)\n\n### Mohamed Salah's Historic 2017-18 Season\n\n| Stat | Mohamed Salah (2017-18) \ud83c\uddea\ud83c\uddec |\n|:---|:------------------------:|\n| \u26bd **Goals** | **32** \ud83e\udd47 |\n| \ud83c\udd70\ufe0f **Assists** | **10** |\n| \ud83c\udfaf **Total Involvements** | **42** |\n| \ud83d\udcc5 **Games** | **36** |\n| \u23f1\ufe0f **Minutes** | **2,954** |\n| \u26bd **Goals per Game** | **0.89** |\n| \ud83d\udfe8 **Yellow Cards** | 1 |\n| \ud83c\udfc5 **Golden Boot** | \u2705 **Won** |\n| \ud83c\udfc6 **PL Record** | **Most goals in a 38-game season (32)** \ud83c\udfc6 |\n\n---\n\n### \ud83d\udcca Current Top 5 Scorers (2025-26)\n\n| Player | \u26bd Goals | \ud83c\udd70\ufe0f Assists | \ud83c\udfaf Total Involvements |\n|:-----:|:-------:|:----------:|:--------------------:|\n| **Haaland** \ud83c\uddf3\ud83c\uddf4 | **27** | **8** | **35** |\n| Thiago \ud83c\udde7\ud83c\uddf7 | 22 | 1 | 23 |\n| Semenyo \ud83c\uddec\ud83c\udded | 17 | 4 | 21 |\n| Watkins \ud83c\udff4\udb40\udc67\udb40\udc62\udb40\udc65\udb40\udc6e\udb40\udc67\udb40\udc7f | 16 | 3 | 19 |\n| Jo\u00e3o Pedro \ud83c\udde7\ud83c\uddf7 | 15 | 5 | 20 |\n\n---\n\n### \ud83d\udd25 Head-to-Head: Salah (2017-18) vs Haaland (2025-26)\n\n| Stat | Salah (2017-18) \ud83d\udc51 | Haaland (2025-26) \ud83c\uddf3\ud83c\uddf4 | Difference |\n|:---|:----------------:|:-------------------:|:----------:|\n| \u26bd **Goals** | **32** | **27** | **Salah +5** \u2705 |\n| \ud83c\udd70\ufe0f **Assists** | **10** | **8** | **Salah +2** \u2705 |\n| \ud83c\udfaf **Total Involvements** | **42** | **35** | **Salah +7** \u2705 |\n| \u26bd **Goals per Game** | **0.89** | **0.71*** | **Salah +0.18** \u2705 |\n| \ud83c\udfc5 **Golden Boot** | \u2705 Won (32) | \ud83d\udfe1 Leading (27) | \u2014 |\n\n*Haaland's goals per game based on 38-game season assumption\n\n---\n\n### \ud83d\udcac The Verdict\n\n| Category | Winner |\n|:---------|:------:|\n| \u26bd **Goals** | \u2705 **Salah \u2014 32 vs 27** |\n| \ud83c\udd70\ufe0f **Assists** | \u2705 **Salah \u2014 10 vs 8** |\n| \ud83c\udfaf **Total Involvements** | \u2705 **Salah \u2014 42 vs 35** |\n| \ud83d\udcc8 **Goals per Game** | \u2705 **Salah \u2014 0.89 vs 0.71** |\n| \ud83c\udfc6 **Record** | \u2705 **Salah \u2014 broke the 38-game record** |\n\n**Mohamed Salah's 2017-18 season remains superior across every metric** \ud83d\udd25\n\n- **5 more goals** than Haaland's current tally\n- **2 more assists**\n- **7 more total involvements**\n- **Set the Premier League record** for most goals in a 38-game season (32)\n\nHaaland's **27 goals and 8 assists** is an elite campaign, but **Salah's 2017-18 was legendary** \u2014 the Egyptian King produced one of the greatest individual seasons in Premier League history! \ud83d\udc51\ud83d\udd34"
     },
     {
       "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
+      "content": "Which club is currently bottom of the Premier League and what transfer news surrounds them?"
     },
     {
       "role": "assistant",
-      "content": "Recent Premier League Results 2025-26:\n\n2026-05-24: Sunderland AFC 2 - 1 Chelsea FC\n2026-05-24: Brighton & Hove Albion FC 0 - 3 Manchester United FC\n2026-05-24: Crystal Palace FC 1 - 2 Arsenal FC\n2026-05-24: Burnley FC 1 - 1 Wolverhampton Wanderers FC\n2026-05-24: Fulham FC 2 - 0 Newcastle United FC\n2026-05-24: Liverpool FC 1 - 1 Brentford FC\n2026-05-24: Manchester City FC 1 - 2 Aston Villa FC\n2026-05-24: Nottingham Forest FC 1 - 1 AFC Bournemouth\n2026-05-24: Tottenham Hotspur FC 1 - 0 Everton FC\n2026-05-24: West Ham United FC 3 - 0 Leeds United FC"
+      "content": "## \u2b07\ufe0f Bottom of the Premier League \u2014 Wolverhampton Wanderers \ud83d\udc3a\n\n### 2026-27 Season Stats\n\n| Stat | Value |\n|:---|:-----:|\n| **Position** | **20th \ud83d\udfe5** |\n| **Points** | **20** |\n| **Wins** | **3** |\n| **Draws** | **11** |\n| **Losses** | **24** |\n| **Goal Difference** | **-41** |\n| **Relegated** | \u2705 **Yes \u2014 to the Championship** \ud83d\ude2c |\n\n---\n\n### \ud83d\udcf0 Latest Wolves Transfer News (Summer 2026)\n\n| Headline | Summary |\n|:---------|:--------|\n| \ud83c\udd95 **New boss appointed** | New head coach **C\u00e9sar Peixoto** has taken charge and confirmed Wolves **will be active** in the transfer market this summer |\n| \u2b05\ufe0f **Potential exit** | An **\u00a318.8m exit deal** is reportedly in the works for a key player |\n| \ud83c\udfaf **Transfer target** | Wolves are interested in **Adrian Blake** \u2014 a 20-year-old Utrecht winger valued at **\u00a32.5m** \u2014 alongside Celtic and Burnley |\n| \ud83c\udfaf **Midfield target** | Interest shown in **Niko Sigur** (Hajduk Split midfielder) |\n| \ud83c\udfe0 **Keeping key men** | **Fer L\u00f3pez** is expected to stay despite interest in returning to Celta Vigo; **Marshall Munetsi** also likely to remain as he fits Peixoto's style |\n| \ud83c\udfc6 **Promotion aim** | Peixoto has spoken with **determination about Wolves' desire to win promotion** back to the Premier League |\n\n---\n\n### \ud83d\udcac Summary\n\n**Wolverhampton Wanderers** finished **rock bottom** of the Premier League with just **20 points** (3 wins all season, -41 GD) and will be playing in the **Championship** next season.\n\nUnder new boss **C\u00e9sar Peixoto**, they're rebuilding with:\n- **Targeting young talent** like Adrian Blake (\u00a32.5m) and Niko Sigur\n- **Holding onto key players** like Fer L\u00f3pez and Munetsi\n- **A clear promotion push** \u2014 aiming for an **immediate return** to the top flight \ud83d\udc3a\u2b06\ufe0f"
     },
     {
       "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
+      "content": "Give me the Premier League statistics for Leicester City during the 2015/16 season."
     },
     {
       "role": "assistant",
-      "content": "Premier League Standings 2025-2026:\n\n1. Arsenal FC | Pts: 85 | P:38 W:26 D:7 L:5 | GD:44\n2. Manchester City FC | Pts: 78 | P:38 W:23 D:9 L:6 | GD:42\n3. Manchester United FC | Pts: 71 | P:38 W:20 D:11 L:7 | GD:19\n4. Aston Villa FC | Pts: 65 | P:38 W:19 D:8 L:11 | GD:7\n5. Liverpool FC | Pts: 60 | P:38 W:17 D:9 L:12 | GD:10\n6. AFC Bournemouth | Pts: 57 | P:38 W:13 D:18 L:7 | GD:4\n7. Sunderland AFC | Pts: 54 | P:38 W:14 D:12 L:12 | GD:-6\n8. Brighton & Hove Albion FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:6\n9. Brentford FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:3\n10. Chelsea FC | Pts: 52 | P:38 W:14 D:10 L:14 | GD:6\n11. Fulham FC | Pts: 52 | P:38 W:15 D:7 L:16 | GD:-4\n12. Newcastle United FC | Pts: 49 | P:38 W:14 D:7 L:17 | GD:-2\n13. Everton FC | Pts: 49 | P:38 W:13 D:10 L:15 | GD:-3\n14. Leeds United FC | Pts: 47 | P:38 W:11 D:14 L:13 | GD:-7\n15. Crystal Palace FC | Pts: 45 | P:38 W:11 D:12 L:15 | GD:-10\n16. Nottingham Forest FC | Pts: 44 | P:38 W:11 D:11 L:16 | GD:-3\n17. Tottenham Hotspur FC | Pts: 41 | P:38 W:10 D:11 L:17 | GD:-9\n18. West Ham United FC | Pts: 39 | P:38 W:10 D:9 L:19 | GD:-19\n19. Burnley FC | Pts: 22 | P:38 W:4 D:10 L:24 | GD:-37\n20. Wolverhampton Wanderers FC | Pts: 20 | P:38 W:3 D:11 L:24 | GD:-41"
+      "content": "## \ud83e\udd8a Leicester City 2015-16 \u2014 The Miracle Season\n\n### \ud83d\udcca Final Season Statistics\n\n| Stat | Value |\n|:---|:-----:|\n| \ud83c\udfc5 **Final Position** | **1st \ud83e\udd47 \u2014 Premier League Champions** |\n| \ud83d\udcc8 **Points** | **81** |\n| \u2705 **Wins** | **23** |\n| \ud83e\udd1d **Draws** | **12** |\n| \u274c **Losses** | **3** |\n| \u26bd **Goals For** | **68** |\n| \ud83d\udee1\ufe0f **Goals Against** | **36** |\n| \ud83d\udcca **Goal Difference** | **+32** |\n| \ud83e\uddf9 **Clean Sheets** | **15** |\n| \ud83d\udcc5 **Games Played** | **38** |\n| \ud83c\udfc6 **Title Margin** | **10 points clear** |\n\n---\n\n### \ud83d\udd25 Key Highlights\n\n| Category | Detail |\n|:---------|:-------|\n| \ud83d\udcc8 **Points Per Game** | **2.13** |\n| \u26bd **Goals Per Game** | **1.79** |\n| \ud83d\udee1\ufe0f **Conceded Per Game** | **0.95** |\n| \ud83c\udfe0 **Home Record** | 12W 5D 2L |\n| \ud83d\udee3\ufe0f **Away Record** | 11W 7D 1L |\n| \ud83c\udfc6 **Biggest Win** | 4-0 vs Swansea City (H) |\n| \ud83c\udfc6 **Biggest Defeat** | 2-5 vs Arsenal (H) |\n| \ud83d\udcc9 **Longest Winless Run** | 3 games (twice) |\n| \ud83d\udcc8 **Longest Winning Run** | 5 games |\n\n---\n\n### \u2b50 Iconic Moments\n\n| Date | Event |\n|:---:|:------|\n| \ud83c\udd95 **Aug 2015** | 4-2 opening day win vs Sunderland \u2014 statement start |\n| \u26a1 **Nov 2015** | Jamie Vardy breaks PL record \u2014 scores in **11 consecutive games** |\n| \ud83c\udfe0 **Dec 2015** | 2-1 win vs Chelsea \u2014 belief starts growing |\n| \ud83d\udd35 **May 2016** | Tottenham draw at Chelsea \u2014 **Leicester are champions!** \ud83c\udfc6 |\n| \u26bd **15 May 2016** | Final game \u2014 1-1 draw at Chelsea to finish the fairytale |\n\n---\n\n### \ud83d\udcac The Verdict\n\n| Category | Detail |\n|:---------|:-------|\n| \ud83c\udfc5 **Record** | 23 wins, just **3 defeats** all season |\n| \ud83c\udfaf **Goal Difference** | **+32** \u2014 dominant, not lucky |\n| \ud83c\udfc6 **Title Race** | Won by **10 points** \u2014 emphatic |\n| \ud83e\udd8a **Odds** | **5000-1** \u2014 greatest sporting upset ever |\n\n**23 wins, 12 draws, 3 defeats, 68 goals scored, 36 conceded, 81 points.** \n\nThe numbers tell the story of a title won through resilience, counter-attacking brilliance under **Claudio Ranieri**, spearheaded by **Jamie Vardy** (24 goals) and **Riyad Mahrez** (17 goals, PFA Player of the Year). \n\nThis wasn't just a title \u2014 it was **the greatest story in football history** \ud83e\udd8a\ud83d\udc51\ud83c\udfc6"
     },
     {
       "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
+      "content": "Give me the Premier League statistics for Liverpool during the 2019/20 season."
     },
     {
       "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0"
+      "content": "## \ud83d\udd34 Liverpool 2019-20 \u2014 The Champions \ud83c\udfc6\n\n### \ud83d\udcca Final Season Statistics\n\n| Stat | Value |\n|:---|:-----:|\n| \ud83c\udfc5 **Final Position** | **1st \ud83e\udd47 \u2014 Premier League Champions** |\n| \ud83d\udcc8 **Points** | **99** |\n| \u2705 **Wins** | **32** |\n| \ud83e\udd1d **Draws** | **3** |\n| \u274c **Losses** | **3** |\n| \u26bd **Goals For** | **85** |\n| \ud83d\udee1\ufe0f **Goals Against** | **33** |\n| \ud83d\udcca **Goal Difference** | **+52** |\n| \ud83e\uddf9 **Clean Sheets** | **15** |\n| \ud83d\udcc5 **Games Played** | **38** |\n| \ud83c\udfc6 **Title Margin** | **18 points clear** |\n\n---\n\n### \ud83d\udd25 Key Highlights\n\n| Category | Detail |\n|:---------|:-------|\n| \ud83d\udcc8 **Points Per Game** | **2.61** |\n| \u26bd **Goals Per Game** | **2.24** |\n| \ud83d\udee1\ufe0f **Conceded Per Game** | **0.87** |\n| \ud83c\udfe0 **Home Record** | **18W 1D 0L** \ud83c\udfdf\ufe0f\ud83d\udcaa |\n| \ud83d\udee3\ufe0f **Away Record** | **14W 2D 3L** |\n| \ud83c\udfc6 **Biggest Win** | 5-2 vs Everton (H) |\n| \ud83c\udfc6 **Biggest Defeat** | 0-4 vs Manchester City (A) |\n| \ud83d\udcc9 **Longest Winless Run** | 1 game (3 times) |\n| \ud83d\udcc8 **Longest Winning Run** | **18 games** \ud83d\udd25 |\n\n---\n\n### \u2b50 Iconic Moments\n\n| Date | Event |\n|:---:|:------|\n| \ud83c\udd95 **Aug 2019** | 4-1 opening day win vs Norwich \u2014 statement start |\n| \u26a1 **Oct 2019** | 2-1 win at Tottenham \u2014 club record **9th straight away win** |\n| \ud83c\udfe0 **Dec 2019** | 5-2 Merseyside derby demolition of Everton |\n| \ud83c\udfc6 **Jun 2020** | Chelsea beat Man City \u2014 **Liverpool are champions!** \ud83c\udfc6 |\n| \u26bd **Jul 2020** | 5-3 win vs Chelsea \u2014 lift the trophy at Anfield \ud83c\udfdf\ufe0f\ud83d\udc51 |\n\n---\n\n### \ud83d\udcac The Verdict\n\n| Category | Detail |\n|:---------|:-------|\n| \ud83c\udfc5 **Record** | **32 wins** \u2014 2nd most in PL history |\n| \ud83c\udfe0 **Home Record** | **18-1-0** \u2014 **perfect at Anfield** \ud83c\udfdf\ufe0f |\n| \ud83c\udfaf **Goal Difference** | **+52** \u2014 utterly dominant |\n| \ud83c\udfc6 **Title Race** | Won by **18 points** \u2014 emphatic |\n| \ud83d\udcca **Points** | **99** \u2014 3rd highest in PL history |\n\n**32 wins, 3 draws, 3 defeats, 85 goals scored, 33 conceded, 99 points.**\n\nThe numbers tell the story of **total dominance** under **J\u00fcrgen Klopp**. An **18-game winning run**, a **perfect home record** (18W 1D), and a title sealed with **7 games to spare** \u2014 the earliest in Premier League history.\n\nThis was **Liverpool's first league title in 30 years**, and they did it in style \u2014 one of the **greatest Premier League campaigns ever** \ud83d\udd34\ud83d\udc51\ud83c\udfc6"
     },
     {
       "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
+      "content": "Eden Hazard 2018"
     },
     {
       "role": "assistant",
-      "content": "Recent Premier League Results 2025-26:\n\n2026-05-24: Sunderland AFC 2 - 1 Chelsea FC\n2026-05-24: Brighton & Hove Albion FC 0 - 3 Manchester United FC\n2026-05-24: Crystal Palace FC 1 - 2 Arsenal FC\n2026-05-24: Burnley FC 1 - 1 Wolverhampton Wanderers FC\n2026-05-24: Fulham FC 2 - 0 Newcastle United FC\n2026-05-24: Liverpool FC 1 - 1 Brentford FC\n2026-05-24: Manchester City FC 1 - 2 Aston Villa FC\n2026-05-24: Nottingham Forest FC 1 - 1 AFC Bournemouth\n2026-05-24: Tottenham Hotspur FC 1 - 0 Everton FC\n2026-05-24: West Ham United FC 3 - 0 Leeds United FC"
+      "content": "## \ud83c\udde7\ud83c\uddea Eden Hazard \u2014 Chelsea 2018 Season\n\n| Stat | Value |\n|:---|:-----:|\n| \ud83c\udfc6 **Competition** | Premier League |\n| \ud83d\udcc5 **Games Played** | **37** |\n| \u23f1\ufe0f **Minutes** | **2,935** |\n| \u26bd **Goals** | **16** |\n| \ud83c\udd70\ufe0f **Assists** | **15** |\n| \ud83c\udfaf **Total Involvements** | **31** |\n| \u26bd **Goals per Game** | **0.43** |\n| \ud83d\udfe8 **Yellow Cards** | 2 |\n| \ud83d\udfe5 **Red Cards** | 0 |\n\n---\n\n### \ud83d\udcac Summary\n\nEden Hazard's **2018 Premier League season** was his finest in a Chelsea shirt:\n\n- **16 goals** \u2014 his best-ever single-season goal tally \ud83d\udd25\n- **15 assists** \u2014 the most he ever registered in a campaign \ud83c\udfaf\n- **31 total goal involvements** \u2014 nearly a goal per game\n- **37 appearances out of 38** \u2014 remarkably consistent availability\n- \ud83c\udfc5 Won the **FA Cup**\n- \ud83c\udf1f Selected in the **PFA Team of the Year**\n\nThe Belgian magician was at his absolute peak \u2014 unplayable! \u2728\ud83d\udd35"
     },
     {
       "role": "user",
-      "content": "How did Jamie Vardy perform in the 2015-16 Premier League season?"
-    },
-    {
-      "role": "user",
-      "content": "How did Jamie Vardy perform in the 2015-16 Premier League season?"
+      "content": "Sadio Mane 2019"
     },
     {
       "role": "assistant",
-      "content": "Premier League Historical Stats - How did Jamie Vardy perform in the 2015-16 Premier League season?\n\nBased on 36 relevant match records from StatsBomb data\n\nPlayer: Jamie Vardy\nSeasons in data: 2015/2016\nMatches found: 36\nTotal Goals: 24\nTotal Assists: 5\nTotal Shots: 118\nTotal Shots on Target: 51\nTotal Passes Completed: 426\nShot Conversion Rate: 20.3%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "Tell me about Harry Kane stats in 2015-16"
-    },
-    {
-      "role": "user",
-      "content": "Tell me about Harry Kane stats in 2015-16"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - Tell me about Harry Kane stats in 2015-16\n\nBased on 38 relevant match records from StatsBomb data\n\nPlayer: Harry Kane\nSeasons in data: 2015/2016\nMatches found: 38\nTotal Goals: 25\nTotal Assists: 1\nTotal Shots: 158\nTotal Shots on Target: 75\nTotal Passes Completed: 720\nShot Conversion Rate: 15.8%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "How many goals did Sergio Aguero score in 2015-16?"
-    },
-    {
-      "role": "user",
-      "content": "How many goals did Sergio Aguero score in 2015-16?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - How many goals did Sergio Aguero score in 2015-16?\n\nBased on 50 relevant match records from StatsBomb data\n\nPlayer: Sergio Leonel Ag\u00fcero del Castillo\nSeasons in data: 2015/2016\nMatches found: 24\nTotal Goals: 19\nTotal Assists: 2\nTotal Shots: 93\nTotal Shots on Target: 41\nTotal Passes Completed: 472\nShot Conversion Rate: 20.4%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "What is the latest Premier League transfer news?"
-    },
-    {
-      "role": "user",
-      "content": "What is the latest Premier League transfer news?"
-    },
-    {
-      "role": "assistant",
-      "content": "Web Search Results for: What is the latest Premier League transfer news? 2026\n\nNote: Web results are unverified and may contain inaccuracies.\n\nTitle: Transfer news: Summer transfer window 2026 - Premier League deals, ins and outs | Transfer Centre News | Sky Sports\nSummary: Keep up to date with all the latest news across the summer transfer window with the Transfer Centre blog on Sky Sports&#x27; website and app, and on Sky Sports News; <strong>summer transfer window opens on June 15 and closes on September 1 at 11pm UK time</strong> ...\nURL: https://www.skysports.com/football/news/11095/13546618/transfer-news-summer-transfer-window-2026-premier-league-deals-ins-and-outs\n\nTitle: Summer Football Transfer Window 2026-27 Latest News | Premier League\nSummary: <strong>The Premier League&#x27;s summer 2026 transfer window officially opened on Monday 15 June and will close on Tuesday 1 September at 23:00 BST</strong>.\nURL: https://www.premierleague.com/en/transfers/2026-27/summer\n\nTitle: Premier League 2026 summer transfers: All confirmed ins, outs for every club - ESPN\nSummary: <strong>Premier League clubs assessing the market to improve their squads before the 2026-27 season begins</strong>. They must contend with the World Cup this summer with the transfer window ongoing.\nURL: https://www.espn.com/soccer/story/_/id/48955344/premier-league-2026-summer-transfers-all-confirmed-ins-outs-every-club\n"
-    },
-    {
-      "role": "user",
-      "content": "Any recent injury news for top Premier League clubs?"
-    },
-    {
-      "role": "user",
-      "content": "Any recent injury news for top Premier League clubs?"
-    },
-    {
-      "role": "assistant",
-      "content": "Web Search Results for: Any recent injury news for top Premier League clubs? 2026\n\nNote: Web results are unverified and may contain inaccuracies.\n\nTitle: Premier League Latest Injury News \u2013 Club by Club Updates\nSummary: See which players are missing from every team, with our injury list guide to all 20 clubs. For more information, visit the official website of the Premier League.\nURL: https://www.premierleague.com/en/latest-player-injuries\n\nTitle: Latest Premier League player injuries - club by club news\nSummary: See all the players injured for each of the 20 Premier League clubs ahead of the start of the new season, which gets under way on Friday 21 August. Last updated: 19:00 BST, 29 Jul 2026.\nURL: https://www.premierleague.com/en/news/4450606/latest-premier-league-player-injuries-club-by-club-news\n\nTitle: EPL Injury Table - Premier Injuries\nSummary: The latest player injuries, suspensions and absences in the English Premier League, from the most comprehensive source of football injury statistics.\nURL: https://www.premierinjuries.com/injury-table.php\n"
-    },
-    {
-      "role": "user",
-      "content": "Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season"
-    },
-    {
-      "role": "user",
-      "content": "Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0\n\nPremier League Historical Stats - Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season\n\nBased on 36 relevant match records from StatsBomb data\n\nPlayer: Jamie Vardy\nSeasons in data: 2015/2016\nMatches found: 36\nTotal Goals: 24\nTotal Assists: 5\nTotal Shots: 118\nTotal Shots on Target: 51\nTotal Passes Completed: 426\nShot Conversion Rate: 20.3%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Standings 2025-2026:\n\n1. Arsenal FC | Pts: 85 | P:38 W:26 D:7 L:5 | GD:44\n2. Manchester City FC | Pts: 78 | P:38 W:23 D:9 L:6 | GD:42\n3. Manchester United FC | Pts: 71 | P:38 W:20 D:11 L:7 | GD:19\n4. Aston Villa FC | Pts: 65 | P:38 W:19 D:8 L:11 | GD:7\n5. Liverpool FC | Pts: 60 | P:38 W:17 D:9 L:12 | GD:10\n6. AFC Bournemouth | Pts: 57 | P:38 W:13 D:18 L:7 | GD:4\n7. Sunderland AFC | Pts: 54 | P:38 W:14 D:12 L:12 | GD:-6\n8. Brighton & Hove Albion FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:6\n9. Brentford FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:3\n10. Chelsea FC | Pts: 52 | P:38 W:14 D:10 L:14 | GD:6\n11. Fulham FC | Pts: 52 | P:38 W:15 D:7 L:16 | GD:-4\n12. Newcastle United FC | Pts: 49 | P:38 W:14 D:7 L:17 | GD:-2\n13. Everton FC | Pts: 49 | P:38 W:13 D:10 L:15 | GD:-3\n14. Leeds United FC | Pts: 47 | P:38 W:11 D:14 L:13 | GD:-7\n15. Crystal Palace FC | Pts: 45 | P:38 W:11 D:12 L:15 | GD:-10\n16. Nottingham Forest FC | Pts: 44 | P:38 W:11 D:11 L:16 | GD:-3\n17. Tottenham Hotspur FC | Pts: 41 | P:38 W:10 D:11 L:17 | GD:-9\n18. West Ham United FC | Pts: 39 | P:38 W:10 D:9 L:19 | GD:-19\n19. Burnley FC | Pts: 22 | P:38 W:4 D:10 L:24 | GD:-37\n20. Wolverhampton Wanderers FC | Pts: 20 | P:38 W:3 D:11 L:24 | GD:-41"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "assistant",
-      "content": "Recent Premier League Results 2025-26:\n\n2026-05-24: Sunderland AFC 2 - 1 Chelsea FC\n2026-05-24: Brighton & Hove Albion FC 0 - 3 Manchester United FC\n2026-05-24: Crystal Palace FC 1 - 2 Arsenal FC\n2026-05-24: Burnley FC 1 - 1 Wolverhampton Wanderers FC\n2026-05-24: Fulham FC 2 - 0 Newcastle United FC\n2026-05-24: Liverpool FC 1 - 1 Brentford FC\n2026-05-24: Manchester City FC 1 - 2 Aston Villa FC\n2026-05-24: Nottingham Forest FC 1 - 1 AFC Bournemouth\n2026-05-24: Tottenham Hotspur FC 1 - 0 Everton FC\n2026-05-24: West Ham United FC 3 - 0 Leeds United FC"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Standings 2025-2026:\n\n1. Arsenal FC | Pts: 85 | P:38 W:26 D:7 L:5 | GD:44\n2. Manchester City FC | Pts: 78 | P:38 W:23 D:9 L:6 | GD:42\n3. Manchester United FC | Pts: 71 | P:38 W:20 D:11 L:7 | GD:19\n4. Aston Villa FC | Pts: 65 | P:38 W:19 D:8 L:11 | GD:7\n5. Liverpool FC | Pts: 60 | P:38 W:17 D:9 L:12 | GD:10\n6. AFC Bournemouth | Pts: 57 | P:38 W:13 D:18 L:7 | GD:4\n7. Sunderland AFC | Pts: 54 | P:38 W:14 D:12 L:12 | GD:-6\n8. Brighton & Hove Albion FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:6\n9. Brentford FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:3\n10. Chelsea FC | Pts: 52 | P:38 W:14 D:10 L:14 | GD:6\n11. Fulham FC | Pts: 52 | P:38 W:15 D:7 L:16 | GD:-4\n12. Newcastle United FC | Pts: 49 | P:38 W:14 D:7 L:17 | GD:-2\n13. Everton FC | Pts: 49 | P:38 W:13 D:10 L:15 | GD:-3\n14. Leeds United FC | Pts: 47 | P:38 W:11 D:14 L:13 | GD:-7\n15. Crystal Palace FC | Pts: 45 | P:38 W:11 D:12 L:15 | GD:-10\n16. Nottingham Forest FC | Pts: 44 | P:38 W:11 D:11 L:16 | GD:-3\n17. Tottenham Hotspur FC | Pts: 41 | P:38 W:10 D:11 L:17 | GD:-9\n18. West Ham United FC | Pts: 39 | P:38 W:10 D:9 L:19 | GD:-19\n19. Burnley FC | Pts: 22 | P:38 W:4 D:10 L:24 | GD:-37\n20. Wolverhampton Wanderers FC | Pts: 20 | P:38 W:3 D:11 L:24 | GD:-41"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "assistant",
-      "content": "Recent Premier League Results 2025-26:\n\n2026-05-24: Sunderland AFC 2 - 1 Chelsea FC\n2026-05-24: Brighton & Hove Albion FC 0 - 3 Manchester United FC\n2026-05-24: Crystal Palace FC 1 - 2 Arsenal FC\n2026-05-24: Burnley FC 1 - 1 Wolverhampton Wanderers FC\n2026-05-24: Fulham FC 2 - 0 Newcastle United FC\n2026-05-24: Liverpool FC 1 - 1 Brentford FC\n2026-05-24: Manchester City FC 1 - 2 Aston Villa FC\n2026-05-24: Nottingham Forest FC 1 - 1 AFC Bournemouth\n2026-05-24: Tottenham Hotspur FC 1 - 0 Everton FC\n2026-05-24: West Ham United FC 3 - 0 Leeds United FC"
-    },
-    {
-      "role": "user",
-      "content": "How did Jamie Vardy perform in the 2015-16 Premier League season?"
-    },
-    {
-      "role": "user",
-      "content": "How did Jamie Vardy perform in the 2015-16 Premier League season?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - How did Jamie Vardy perform in the 2015-16 Premier League season?\n\nBased on 36 relevant match records from StatsBomb data\n\nPlayer: Jamie Vardy\nSeasons in data: 2015/2016\nMatches found: 36\nTotal Goals: 24\nTotal Assists: 5\nTotal Shots: 118\nTotal Shots on Target: 51\nTotal Passes Completed: 426\nShot Conversion Rate: 20.3%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "Tell me about Harry Kane stats in 2015-16"
-    },
-    {
-      "role": "user",
-      "content": "Tell me about Harry Kane stats in 2015-16"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - Tell me about Harry Kane stats in 2015-16\n\nBased on 38 relevant match records from StatsBomb data\n\nPlayer: Harry Kane\nSeasons in data: 2015/2016\nMatches found: 38\nTotal Goals: 25\nTotal Assists: 1\nTotal Shots: 158\nTotal Shots on Target: 75\nTotal Passes Completed: 720\nShot Conversion Rate: 15.8%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "How many goals did Sergio Aguero score in 2015-16?"
-    },
-    {
-      "role": "user",
-      "content": "How many goals did Sergio Aguero score in 2015-16?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - How many goals did Sergio Aguero score in 2015-16?\n\nBased on 50 relevant match records from StatsBomb data\n\nPlayer: Sergio Leonel Ag\u00fcero del Castillo\nSeasons in data: 2015/2016\nMatches found: 24\nTotal Goals: 19\nTotal Assists: 2\nTotal Shots: 93\nTotal Shots on Target: 41\nTotal Passes Completed: 472\nShot Conversion Rate: 20.4%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "What is the latest Premier League transfer news?"
-    },
-    {
-      "role": "user",
-      "content": "What is the latest Premier League transfer news?"
-    },
-    {
-      "role": "assistant",
-      "content": "Web Search Results for: What is the latest Premier League transfer news? 2026\n\nNote: Web results are unverified and may contain inaccuracies.\n\nTitle: Transfer news: Summer transfer window 2026 - Premier League deals, ins and outs | Transfer Centre News | Sky Sports\nSummary: Keep up to date with all the latest news across the summer transfer window with the Transfer Centre blog on Sky Sports&#x27; website and app, and on Sky Sports News; <strong>summer transfer window opens on June 15 and closes on September 1 at 11pm UK time</strong> ...\nURL: https://www.skysports.com/football/news/11095/13546618/transfer-news-summer-transfer-window-2026-premier-league-deals-ins-and-outs\n\nTitle: Summer Football Transfer Window 2026-27 Latest News | Premier League\nSummary: <strong>The Premier League&#x27;s summer 2026 transfer window officially opened on Monday 15 June and will close on Tuesday 1 September at 23:00 BST</strong>.\nURL: https://www.premierleague.com/en/transfers/2026-27/summer\n\nTitle: Premier League 2026 summer transfers: All confirmed ins, outs for every club - ESPN\nSummary: <strong>Premier League clubs assessing the market to improve their squads before the 2026-27 season begins</strong>. They must contend with the World Cup this summer with the transfer window ongoing.\nURL: https://www.espn.com/soccer/story/_/id/48955344/premier-league-2026-summer-transfers-all-confirmed-ins-outs-every-club\n"
-    },
-    {
-      "role": "user",
-      "content": "Any recent injury news for top Premier League clubs?"
-    },
-    {
-      "role": "user",
-      "content": "Any recent injury news for top Premier League clubs?"
-    },
-    {
-      "role": "assistant",
-      "content": "Web Search Results for: Any recent injury news for top Premier League clubs? 2026\n\nNote: Web results are unverified and may contain inaccuracies.\n\nTitle: Premier League Latest Injury News \u2013 Club by Club Updates\nSummary: See which players are missing from every team, with our injury list guide to all 20 clubs. For more information, visit the official website of the Premier League.\nURL: https://www.premierleague.com/en/latest-player-injuries\n\nTitle: Latest Premier League player injuries - club by club news\nSummary: See all the players injured for each of the 20 Premier League clubs ahead of the start of the new season, which gets under way on Friday 21 August. Last updated: 19:00 BST, 29 Jul 2026.\nURL: https://www.premierleague.com/en/news/4450606/latest-premier-league-player-injuries-club-by-club-news\n\nTitle: EPL Injury Table - Premier Injuries\nSummary: The latest player injuries, suspensions and absences in the English Premier League, from the most comprehensive source of football injury statistics.\nURL: https://www.premierinjuries.com/injury-table.php\n"
-    },
-    {
-      "role": "user",
-      "content": "Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season"
-    },
-    {
-      "role": "user",
-      "content": "Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0\n\nPremier League Historical Stats - Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season\n\nBased on 36 relevant match records from StatsBomb data\n\nPlayer: Jamie Vardy\nSeasons in data: 2015/2016\nMatches found: 36\nTotal Goals: 24\nTotal Assists: 5\nTotal Shots: 118\nTotal Shots on Target: 51\nTotal Passes Completed: 426\nShot Conversion Rate: 20.3%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Standings 2025-2026:\n\n1. Arsenal FC | Pts: 85 | P:38 W:26 D:7 L:5 | GD:44\n2. Manchester City FC | Pts: 78 | P:38 W:23 D:9 L:6 | GD:42\n3. Manchester United FC | Pts: 71 | P:38 W:20 D:11 L:7 | GD:19\n4. Aston Villa FC | Pts: 65 | P:38 W:19 D:8 L:11 | GD:7\n5. Liverpool FC | Pts: 60 | P:38 W:17 D:9 L:12 | GD:10\n6. AFC Bournemouth | Pts: 57 | P:38 W:13 D:18 L:7 | GD:4\n7. Sunderland AFC | Pts: 54 | P:38 W:14 D:12 L:12 | GD:-6\n8. Brighton & Hove Albion FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:6\n9. Brentford FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:3\n10. Chelsea FC | Pts: 52 | P:38 W:14 D:10 L:14 | GD:6\n11. Fulham FC | Pts: 52 | P:38 W:15 D:7 L:16 | GD:-4\n12. Newcastle United FC | Pts: 49 | P:38 W:14 D:7 L:17 | GD:-2\n13. Everton FC | Pts: 49 | P:38 W:13 D:10 L:15 | GD:-3\n14. Leeds United FC | Pts: 47 | P:38 W:11 D:14 L:13 | GD:-7\n15. Crystal Palace FC | Pts: 45 | P:38 W:11 D:12 L:15 | GD:-10\n16. Nottingham Forest FC | Pts: 44 | P:38 W:11 D:11 L:16 | GD:-3\n17. Tottenham Hotspur FC | Pts: 41 | P:38 W:10 D:11 L:17 | GD:-9\n18. West Ham United FC | Pts: 39 | P:38 W:10 D:9 L:19 | GD:-19\n19. Burnley FC | Pts: 22 | P:38 W:4 D:10 L:24 | GD:-37\n20. Wolverhampton Wanderers FC | Pts: 20 | P:38 W:3 D:11 L:24 | GD:-41"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "assistant",
-      "content": "Recent Premier League Results 2025-26:\n\n2026-05-24: Sunderland AFC 2 - 1 Chelsea FC\n2026-05-24: Brighton & Hove Albion FC 0 - 3 Manchester United FC\n2026-05-24: Crystal Palace FC 1 - 2 Arsenal FC\n2026-05-24: Burnley FC 1 - 1 Wolverhampton Wanderers FC\n2026-05-24: Fulham FC 2 - 0 Newcastle United FC\n2026-05-24: Liverpool FC 1 - 1 Brentford FC\n2026-05-24: Manchester City FC 1 - 2 Aston Villa FC\n2026-05-24: Nottingham Forest FC 1 - 1 AFC Bournemouth\n2026-05-24: Tottenham Hotspur FC 1 - 0 Everton FC\n2026-05-24: West Ham United FC 3 - 0 Leeds United FC"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Standings 2025-2026:\n\n1. Arsenal FC | Pts: 85 | P:38 W:26 D:7 L:5 | GD:44\n2. Manchester City FC | Pts: 78 | P:38 W:23 D:9 L:6 | GD:42\n3. Manchester United FC | Pts: 71 | P:38 W:20 D:11 L:7 | GD:19\n4. Aston Villa FC | Pts: 65 | P:38 W:19 D:8 L:11 | GD:7\n5. Liverpool FC | Pts: 60 | P:38 W:17 D:9 L:12 | GD:10\n6. AFC Bournemouth | Pts: 57 | P:38 W:13 D:18 L:7 | GD:4\n7. Sunderland AFC | Pts: 54 | P:38 W:14 D:12 L:12 | GD:-6\n8. Brighton & Hove Albion FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:6\n9. Brentford FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:3\n10. Chelsea FC | Pts: 52 | P:38 W:14 D:10 L:14 | GD:6\n11. Fulham FC | Pts: 52 | P:38 W:15 D:7 L:16 | GD:-4\n12. Newcastle United FC | Pts: 49 | P:38 W:14 D:7 L:17 | GD:-2\n13. Everton FC | Pts: 49 | P:38 W:13 D:10 L:15 | GD:-3\n14. Leeds United FC | Pts: 47 | P:38 W:11 D:14 L:13 | GD:-7\n15. Crystal Palace FC | Pts: 45 | P:38 W:11 D:12 L:15 | GD:-10\n16. Nottingham Forest FC | Pts: 44 | P:38 W:11 D:11 L:16 | GD:-3\n17. Tottenham Hotspur FC | Pts: 41 | P:38 W:10 D:11 L:17 | GD:-9\n18. West Ham United FC | Pts: 39 | P:38 W:10 D:9 L:19 | GD:-19\n19. Burnley FC | Pts: 22 | P:38 W:4 D:10 L:24 | GD:-37\n20. Wolverhampton Wanderers FC | Pts: 20 | P:38 W:3 D:11 L:24 | GD:-41"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "assistant",
-      "content": "Recent Premier League Results 2025-26:\n\n2026-05-24: Sunderland AFC 2 - 1 Chelsea FC\n2026-05-24: Brighton & Hove Albion FC 0 - 3 Manchester United FC\n2026-05-24: Crystal Palace FC 1 - 2 Arsenal FC\n2026-05-24: Burnley FC 1 - 1 Wolverhampton Wanderers FC\n2026-05-24: Fulham FC 2 - 0 Newcastle United FC\n2026-05-24: Liverpool FC 1 - 1 Brentford FC\n2026-05-24: Manchester City FC 1 - 2 Aston Villa FC\n2026-05-24: Nottingham Forest FC 1 - 1 AFC Bournemouth\n2026-05-24: Tottenham Hotspur FC 1 - 0 Everton FC\n2026-05-24: West Ham United FC 3 - 0 Leeds United FC"
-    },
-    {
-      "role": "user",
-      "content": "How did Jamie Vardy perform in the 2015-16 Premier League season?"
-    },
-    {
-      "role": "user",
-      "content": "How did Jamie Vardy perform in the 2015-16 Premier League season?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - How did Jamie Vardy perform in the 2015-16 Premier League season?\n\nBased on 36 relevant match records from StatsBomb data\n\nPlayer: Jamie Vardy\nSeasons in data: 2015/2016\nMatches found: 36\nTotal Goals: 24\nTotal Assists: 5\nTotal Shots: 118\nTotal Shots on Target: 51\nTotal Passes Completed: 426\nShot Conversion Rate: 20.3%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "Tell me about Harry Kane stats in 2015-16"
-    },
-    {
-      "role": "user",
-      "content": "Tell me about Harry Kane stats in 2015-16"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - Tell me about Harry Kane stats in 2015-16\n\nBased on 38 relevant match records from StatsBomb data\n\nPlayer: Harry Kane\nSeasons in data: 2015/2016\nMatches found: 38\nTotal Goals: 25\nTotal Assists: 1\nTotal Shots: 158\nTotal Shots on Target: 75\nTotal Passes Completed: 720\nShot Conversion Rate: 15.8%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "How many goals did Sergio Aguero score in 2015-16?"
-    },
-    {
-      "role": "user",
-      "content": "How many goals did Sergio Aguero score in 2015-16?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - How many goals did Sergio Aguero score in 2015-16?\n\nBased on 50 relevant match records from StatsBomb data\n\nPlayer: Sergio Leonel Ag\u00fcero del Castillo\nSeasons in data: 2015/2016\nMatches found: 24\nTotal Goals: 19\nTotal Assists: 2\nTotal Shots: 93\nTotal Shots on Target: 41\nTotal Passes Completed: 472\nShot Conversion Rate: 20.4%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "What is the latest Premier League transfer news?"
-    },
-    {
-      "role": "user",
-      "content": "What is the latest Premier League transfer news?"
-    },
-    {
-      "role": "assistant",
-      "content": "Web Search Results for: What is the latest Premier League transfer news? 2026\n\nNote: Web results are unverified and may contain inaccuracies.\n\nTitle: Summer Football Transfer Window 2026-27 Latest News | Premier League\nSummary: <strong>The Premier League&#x27;s summer 2026 transfer window officially opened on Monday 15 June and will close on Tuesday 1 September at 23:00 BST</strong>.\nURL: https://www.premierleague.com/en/transfers/2026-27/summer\n\nTitle: Transfer news: Summer transfer window 2026 - Premier League deals, ins and outs | Transfer Centre News | Sky Sports\nSummary: Keep up to date with all the latest news across the summer transfer window with the Transfer Centre blog on Sky Sports&#x27; website and app, and on Sky Sports News; <strong>summer transfer window opens on June 15 and closes on September 1 at 11pm UK time</strong> ...\nURL: https://www.skysports.com/football/news/11095/13546618/transfer-news-summer-transfer-window-2026-premier-league-deals-ins-and-outs\n\nTitle: Premier League 2026 summer transfers: All confirmed ins, outs for every club - ESPN\nSummary: <strong>Premier League clubs assessing the market to improve their squads before the 2026-27 season begins</strong>. They must contend with the World Cup this summer with the transfer window ongoing.\nURL: https://www.espn.com/soccer/story/_/id/48955344/premier-league-2026-summer-transfers-all-confirmed-ins-outs-every-club\n"
-    },
-    {
-      "role": "user",
-      "content": "Any recent injury news for top Premier League clubs?"
-    },
-    {
-      "role": "user",
-      "content": "Any recent injury news for top Premier League clubs?"
-    },
-    {
-      "role": "assistant",
-      "content": "Web Search Results for: Any recent injury news for top Premier League clubs? 2026\n\nNote: Web results are unverified and may contain inaccuracies.\n\nTitle: Premier League Latest Injury News \u2013 Club by Club Updates\nSummary: See which players are missing from every team, with our injury list guide to all 20 clubs. For more information, visit the official website of the Premier League.\nURL: https://www.premierleague.com/en/latest-player-injuries\n\nTitle: Latest Premier League player injuries - club by club news\nSummary: See all the players injured for each of the 20 Premier League clubs ahead of the start of the new season, which gets under way on Friday 21 August. Last updated: 19:00 BST, 29 Jul 2026.\nURL: https://www.premierleague.com/en/news/4450606/latest-premier-league-player-injuries-club-by-club-news\n\nTitle: EPL Injury Table - Premier Injuries\nSummary: The latest player injuries, suspensions and absences in the English Premier League, from the most comprehensive source of football injury statistics.\nURL: https://www.premierinjuries.com/injury-table.php\n"
-    },
-    {
-      "role": "user",
-      "content": "Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season"
-    },
-    {
-      "role": "user",
-      "content": "Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0\n\nPremier League Historical Stats - Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season\n\nBased on 36 relevant match records from StatsBomb data\n\nPlayer: Jamie Vardy\nSeasons in data: 2015/2016\nMatches found: 36\nTotal Goals: 24\nTotal Assists: 5\nTotal Shots: 118\nTotal Shots on Target: 51\nTotal Passes Completed: 426\nShot Conversion Rate: 20.3%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "user",
-      "content": "Who is top of the Premier League right now?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Standings 2025-2026:\n\n1. Arsenal FC | Pts: 85 | P:38 W:26 D:7 L:5 | GD:44\n2. Manchester City FC | Pts: 78 | P:38 W:23 D:9 L:6 | GD:42\n3. Manchester United FC | Pts: 71 | P:38 W:20 D:11 L:7 | GD:19\n4. Aston Villa FC | Pts: 65 | P:38 W:19 D:8 L:11 | GD:7\n5. Liverpool FC | Pts: 60 | P:38 W:17 D:9 L:12 | GD:10\n6. AFC Bournemouth | Pts: 57 | P:38 W:13 D:18 L:7 | GD:4\n7. Sunderland AFC | Pts: 54 | P:38 W:14 D:12 L:12 | GD:-6\n8. Brighton & Hove Albion FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:6\n9. Brentford FC | Pts: 53 | P:38 W:14 D:11 L:13 | GD:3\n10. Chelsea FC | Pts: 52 | P:38 W:14 D:10 L:14 | GD:6\n11. Fulham FC | Pts: 52 | P:38 W:15 D:7 L:16 | GD:-4\n12. Newcastle United FC | Pts: 49 | P:38 W:14 D:7 L:17 | GD:-2\n13. Everton FC | Pts: 49 | P:38 W:13 D:10 L:15 | GD:-3\n14. Leeds United FC | Pts: 47 | P:38 W:11 D:14 L:13 | GD:-7\n15. Crystal Palace FC | Pts: 45 | P:38 W:11 D:12 L:15 | GD:-10\n16. Nottingham Forest FC | Pts: 44 | P:38 W:11 D:11 L:16 | GD:-3\n17. Tottenham Hotspur FC | Pts: 41 | P:38 W:10 D:11 L:17 | GD:-9\n18. West Ham United FC | Pts: 39 | P:38 W:10 D:9 L:19 | GD:-19\n19. Burnley FC | Pts: 22 | P:38 W:4 D:10 L:24 | GD:-37\n20. Wolverhampton Wanderers FC | Pts: 20 | P:38 W:3 D:11 L:24 | GD:-41"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "user",
-      "content": "Who is the leading scorer this season?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "user",
-      "content": "What were the most recent Premier League results?"
-    },
-    {
-      "role": "assistant",
-      "content": "Recent Premier League Results 2025-26:\n\n2026-05-24: Sunderland AFC 2 - 1 Chelsea FC\n2026-05-24: Brighton & Hove Albion FC 0 - 3 Manchester United FC\n2026-05-24: Crystal Palace FC 1 - 2 Arsenal FC\n2026-05-24: Burnley FC 1 - 1 Wolverhampton Wanderers FC\n2026-05-24: Fulham FC 2 - 0 Newcastle United FC\n2026-05-24: Liverpool FC 1 - 1 Brentford FC\n2026-05-24: Manchester City FC 1 - 2 Aston Villa FC\n2026-05-24: Nottingham Forest FC 1 - 1 AFC Bournemouth\n2026-05-24: Tottenham Hotspur FC 1 - 0 Everton FC\n2026-05-24: West Ham United FC 3 - 0 Leeds United FC"
-    },
-    {
-      "role": "user",
-      "content": "How did Jamie Vardy perform in the 2015-16 Premier League season?"
-    },
-    {
-      "role": "user",
-      "content": "How did Jamie Vardy perform in the 2015-16 Premier League season?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - How did Jamie Vardy perform in the 2015-16 Premier League season?\n\nBased on 36 relevant match records from StatsBomb data\n\nPlayer: Jamie Vardy\nSeasons in data: 2015/2016\nMatches found: 36\nTotal Goals: 24\nTotal Assists: 5\nTotal Shots: 118\nTotal Shots on Target: 51\nTotal Passes Completed: 426\nShot Conversion Rate: 20.3%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "Tell me about Harry Kane stats in 2015-16"
-    },
-    {
-      "role": "user",
-      "content": "Tell me about Harry Kane stats in 2015-16"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - Tell me about Harry Kane stats in 2015-16\n\nBased on 38 relevant match records from StatsBomb data\n\nPlayer: Harry Kane\nSeasons in data: 2015/2016\nMatches found: 38\nTotal Goals: 25\nTotal Assists: 1\nTotal Shots: 158\nTotal Shots on Target: 75\nTotal Passes Completed: 720\nShot Conversion Rate: 15.8%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "How many goals did Sergio Aguero score in 2015-16?"
-    },
-    {
-      "role": "user",
-      "content": "How many goals did Sergio Aguero score in 2015-16?"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Historical Stats - How many goals did Sergio Aguero score in 2015-16?\n\nBased on 50 relevant match records from StatsBomb data\n\nPlayer: Sergio Leonel Ag\u00fcero del Castillo\nSeasons in data: 2015/2016\nMatches found: 24\nTotal Goals: 19\nTotal Assists: 2\nTotal Shots: 93\nTotal Shots on Target: 41\nTotal Passes Completed: 472\nShot Conversion Rate: 20.4%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
-    },
-    {
-      "role": "user",
-      "content": "What is the latest Premier League transfer news?"
-    },
-    {
-      "role": "user",
-      "content": "What is the latest Premier League transfer news?"
-    },
-    {
-      "role": "assistant",
-      "content": "Web Search Results for: What is the latest Premier League transfer news? 2026\n\nNote: Web results are unverified and may contain inaccuracies.\n\nTitle: Summer Football Transfer Window 2026-27 Latest News | Premier League\nSummary: <strong>The Premier League&#x27;s summer 2026 transfer window officially opened on Monday 15 June and will close on Tuesday 1 September at 23:00 BST</strong>.\nURL: https://www.premierleague.com/en/transfers/2026-27/summer\n\nTitle: Transfer news: Summer transfer window 2026 - Premier League deals, ins and outs | Transfer Centre News | Sky Sports\nSummary: Keep up to date with all the latest news across the summer transfer window with the Transfer Centre blog on Sky Sports&#x27; website and app, and on Sky Sports News; <strong>summer transfer window opens on June 15 and closes on September 1 at 11pm UK time</strong> ...\nURL: https://www.skysports.com/football/news/11095/13546618/transfer-news-summer-transfer-window-2026-premier-league-deals-ins-and-outs\n\nTitle: Premier League 2026 summer transfers: All confirmed ins, outs for every club - ESPN\nSummary: <strong>Premier League clubs assessing the market to improve their squads before the 2026-27 season begins</strong>. They must contend with the World Cup this summer with the transfer window ongoing.\nURL: https://www.espn.com/soccer/story/_/id/48955344/premier-league-2026-summer-transfers-all-confirmed-ins-outs-every-club\n"
-    },
-    {
-      "role": "user",
-      "content": "Any recent injury news for top Premier League clubs?"
-    },
-    {
-      "role": "user",
-      "content": "Any recent injury news for top Premier League clubs?"
-    },
-    {
-      "role": "assistant",
-      "content": "Web Search Results for: Any recent injury news for top Premier League clubs? 2026\n\nNote: Web results are unverified and may contain inaccuracies.\n\nTitle: Premier League Latest Injury News \u2013 Club by Club Updates\nSummary: See which players are missing from every team, with our injury list guide to all 20 clubs. For more information, visit the official website of the Premier League.\nURL: https://www.premierleague.com/en/latest-player-injuries\n\nTitle: Latest Premier League player injuries - club by club news\nSummary: See all the players injured for each of the 20 Premier League clubs ahead of the start of the new season, which gets under way on Friday 21 August. Last updated: 19:00 BST, 29 Jul 2026.\nURL: https://www.premierleague.com/en/news/4450606/latest-premier-league-player-injuries-club-by-club-news\n\nTitle: EPL Injury Table - Premier Injuries\nSummary: The latest player injuries, suspensions and absences in the English Premier League, from the most comprehensive source of football injury statistics.\nURL: https://www.premierinjuries.com/injury-table.php\n"
-    },
-    {
-      "role": "user",
-      "content": "Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season"
-    },
-    {
-      "role": "user",
-      "content": "Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season"
-    },
-    {
-      "role": "assistant",
-      "content": "Premier League Top Scorers 2025-26:\n\n1. Erling Haaland (Manchester City FC) | Goals: 27 | Assists: 8\n2. Thiago (Brentford FC) | Goals: 22 | Assists: 1\n3. Antoine Semenyo (Manchester City FC) | Goals: 17 | Assists: 4\n4. Ollie Watkins (Aston Villa FC) | Goals: 16 | Assists: 3\n5. Jo\u00e3o Pedro (Chelsea FC) | Goals: 15 | Assists: 5\n6. Morgan Gibbs-White (Nottingham Forest FC) | Goals: 15 | Assists: 5\n7. Viktor Gy\u00f6keres (Arsenal FC) | Goals: 14 | Assists: 1\n8. Dominic Calvert-Lewin (Leeds United FC) | Goals: 14 | Assists: 1\n9. Danny Welbeck (Brighton & Hove Albion FC) | Goals: 13 | Assists: 1\n10. Eli Kroupi (AFC Bournemouth) | Goals: 13 | Assists: 0\n\nPremier League Historical Stats - Compare Jamie Vardy 2015-16 historical stats with who is currently top scorer this season\n\nBased on 36 relevant match records from StatsBomb data\n\nPlayer: Jamie Vardy\nSeasons in data: 2015/2016\nMatches found: 36\nTotal Goals: 24\nTotal Assists: 5\nTotal Shots: 118\nTotal Shots on Target: 51\nTotal Passes Completed: 426\nShot Conversion Rate: 20.3%\n\nNote: Stats aggregated from StatsBomb match records. Week 5 has 1 season ingested. Full 8 seasons ingested in Week 7."
+      "content": "## \ud83c\uddf8\ud83c\uddf3 Sadio Man\u00e9 \u2014 Liverpool 2019 Season\n\n| Stat | Value |\n|:---|:-----:|\n| \ud83c\udfc6 **Competition** | Premier League |\n| \ud83d\udcc5 **Games Played** | **36** |\n| \u23f1\ufe0f **Minutes** | **3,107** |\n| \u26bd **Goals** | **22** |\n| \ud83c\udd70\ufe0f **Assists** | **1** |\n| \ud83c\udfaf **Total Involvements** | **23** |\n| \u26bd **Goals per Game** | **0.61** |\n| \ud83d\udfe8 **Yellow Cards** | **5** |\n| \ud83d\udfe5 **Red Cards** | **0** |\n\n---\n\n### \ud83d\udcac Summary\n\nSadio Man\u00e9's **2019 Premier League season** was a standout campaign:\n\n- **22 goals** \u2014 his joint-best Premier League goal tally (alongside 2018-19) \ud83d\udd25\n- **Shared the Golden Boot** \ud83e\udd47 with Mohamed Salah and Pierre-Emerick Aubameyang (all on 22 goals)\n- **3,107 minutes** \u2014 one of the most-used players in the Liverpool squad\n- **5 yellow cards** \u2014 typical of his high-energy, combative style\n- \ud83c\udfc6 Won the **UEFA Champions League** (June 2019)\n- \ud83c\udf1f Selected in the **PFA Team of the Year**\n\nThe Senegalese forward was at his explosive best \u2014 pace, power, and relentless pressing made him one of the most feared wingers in Europe! \ud83d\udd34\u26a1"
     }
   ]
 }

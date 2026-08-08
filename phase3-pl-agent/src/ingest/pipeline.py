@@ -1,31 +1,39 @@
 import chromadb
 from chromadb.utils.embedding_functions import SentenceTransformerEmbeddingFunction
-from src.ingest.player_stats import load_player_stats
+
 from src.ingest.openfootball import load_matches
+from src.ingest.player_stats import load_player_stats
 
 EMBEDDING_FN = SentenceTransformerEmbeddingFunction(
     model_name="all-MiniLM-L6-v2"
 )
 
 MATCH_COLLECTION = "pl_history"
-
-PLAYER_COLLECTION = "pl_players"
+PLAYER_COLLECTION = "pl_player_stats"
 
 
 def get_embedding_fn():
-    global _EMBEDDING_FN
-    if _EMBEDDING_FN is None:
-        _EMBEDDING_FN = SentenceTransformerEmbeddingFunction(
-            model_name='all-MiniLM-L6-v2'
-        )
-    return _EMBEDDING_FN
+    return EMBEDDING_FN
 
 
 def get_chroma_client():
     return chromadb.PersistentClient(path="./chroma_db")
 
 
-def get_or_create_collection():
+# =====================================================
+# MATCH COLLECTION
+# =====================================================
+
+def get_collection():
+    client = get_chroma_client()
+
+    return client.get_collection(
+        MATCH_COLLECTION,
+        embedding_function=EMBEDDING_FN,
+    )
+
+
+def create_match_collection():
     client = get_chroma_client()
 
     try:
@@ -39,16 +47,11 @@ def get_or_create_collection():
     )
 
 
-def get_collection():
-    client = get_chroma_client()
+# =====================================================
+# PLAYER COLLECTION
+# =====================================================
 
-    return client.get_collection(
-        MATCH_COLLECTION,
-        embedding_function=EMBEDDING_FN,
-    )
-    
 def get_player_collection():
-
     client = get_chroma_client()
 
     return client.get_collection(
@@ -57,15 +60,33 @@ def get_player_collection():
     )
 
 
+def create_player_collection():
+    client = get_chroma_client()
+
+    try:
+        client.delete_collection(PLAYER_COLLECTION)
+    except Exception:
+        pass
+
+    return client.create_collection(
+        PLAYER_COLLECTION,
+        embedding_function=EMBEDDING_FN,
+    )
+
+
+# =====================================================
+# INGEST MATCH HISTORY
+# =====================================================
+
 def ingest_history(data_path="data/openfootball"):
 
-    collection = get_or_create_collection()
+    collection = create_match_collection()
 
     matches = load_matches(data_path)
 
     documents = []
     ids = []
-    metadata = []
+    metadatas = []
 
     for i, match in enumerate(matches):
 
@@ -73,14 +94,16 @@ def ingest_history(data_path="data/openfootball"):
 
         ids.append(f"match_{i}")
 
-        metadata.append({
-            "season": match["season"],
-            "competition": "Premier League",
-            "matchday": match["matchday"],
-            "home": match["home"],
-            "away": match["away"],
-            "winner": match["winner"]
-        })
+        metadatas.append(
+            {
+                "season": match["season"],
+                "competition": "Premier League",
+                "matchday": match["matchday"],
+                "home": match["home"],
+                "away": match["away"],
+                "winner": match["winner"],
+            }
+        )
 
     batch_size = 100
 
@@ -91,62 +114,52 @@ def ingest_history(data_path="data/openfootball"):
         collection.add(
             ids=ids[start:end],
             documents=documents[start:end],
-            metadatas=metadata[start:end]
+            metadatas=metadatas[start:end],
         )
 
-        print(
-            f"Stored {min(end,len(documents))}/{len(documents)}"
-        )
+        print(f"Stored {end}/{len(documents)}")
 
     print()
-
     print("Done.")
-
     print("Documents:", collection.count())
 
     return collection
 
+
+# =====================================================
+# INGEST PLAYER STATS
+# =====================================================
+
 def ingest_player_stats(csv_path="data/player_data/player.csv"):
 
-    client = get_chroma_client()
-
-    # Delete old player collection before rebuilding
-    try:
-        client.delete_collection(PLAYER_COLLECTION)
-    except Exception:
-        pass
-
-    collection = client.create_collection(
-        PLAYER_COLLECTION,
-        embedding_function=EMBEDDING_FN,
-    )
+    collection = create_player_collection()
 
     players = load_player_stats(csv_path)
 
     documents = []
     ids = []
-    metadata = []
+    metadatas = []
 
-    for i, p in enumerate(players):
+    for i, player in enumerate(players):
 
-        documents.append(p["text"])
+        documents.append(player["text"])
+
         ids.append(f"player_{i}")
 
-        metadata.append(
+        metadatas.append(
             {
-                "player": p["player"],
-                "team": p["team"],
-                "year": p["year"],
-                "games": p["games"],
-                "minutes": p["minutes"],
-                "goals": p["goals"],
-                "assists": p["assists"],
-                "yellow_cards": p["yellow_cards"],
-                "red_cards": p["red_cards"],
+                "player": player["player"],
+                "team": player["team"],
+                "season": player["year"],
+                "games": player["games"],
+                "minutes": player["minutes"],
+                "goals": player["goals"],
+                "assists": player["assists"],
+                "yellow_cards": player["yellow_cards"],
+                "red_cards": player["red_cards"],
             }
         )
 
-    # Add to ChromaDB in smaller batches
     batch_size = 500
 
     for start in range(0, len(documents), batch_size):
@@ -156,12 +169,10 @@ def ingest_player_stats(csv_path="data/player_data/player.csv"):
         collection.add(
             ids=ids[start:end],
             documents=documents[start:end],
-            metadatas=metadata[start:end],
+            metadatas=metadatas[start:end],
         )
 
-        print(
-            f"Stored {end}/{len(documents)} player seasons"
-        )
+        print(f"Stored {end}/{len(documents)} player records")
 
     print()
     print("Player collection created.")
