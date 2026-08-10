@@ -3,22 +3,13 @@ import json
 from openai import OpenAI
 from dotenv import load_dotenv
 from src.tools.registry import TOOLS, TOOL_MAP
-from src.tools.live_tool import (
-    get_standings,
-    get_top_scorers,
-    get_recent_results,
-    get_upcoming_fixtures,
-    get_team_matches,
-)
-from src.tools.rag_tool import search_historical_stats
-from src.tools.search_tool import brave_search
 from src.memory import SessionMemory
 from src.hooks import pre_tool_hook, post_tool_hook
-from src.constants import RESET, DIM
+from src.constants import RESET, BOLD, DIM
 
 load_dotenv()
 
-DEFAULT_MODEL = 'deepseek/deepseek-v4-flash'
+DEFAULT_MODEL = 'openai/gpt-oss-20b:free'
 FALLBACK_MODEL = 'tinyllama:latest'
 
 SYSTEM_PROMPT = '''You are a Premier League football research assistant inspired by FotMob.
@@ -37,43 +28,48 @@ AVAILABLE TOOLS
 
 STRICT RULES
 
-You MUST answer every football question using one of the provided tools.
+? Always use tool results as the source of truth.
 
-Do not answer from memory.
+? Never invent:
+  - seasons
+  - clubs
+  - scores
+  - standings
+  - transfers
+  - statistics
 
-Choose exactly one tool.
+? If a tool returns no data, tell the user exactly that.
 
-Wait for the tool output.
+? Never rewrite league tables into paragraphs.
 
-Only after receiving tool output may you answer.
+? If a tool returns a table or list, preserve the ordering.
 
-Never call the same tool twice.
+? Never change match scores.
 
-If the tool returns "No data", answer exactly that.
+? Never infer a winner from a draw.
 
-Historical player questions:
-→ search_historical_stats
+? Never say a team won 1-1.
 
-Historical match questions:
-→ search_historical_stats
+? Never say a team won 5-8.
 
-Current standings:
-→ get_standings
+? If a match is 1-1 it is a draw.
 
-Current top scorers:
-→ get_top_scorers
+? If historical data is requested and no season is specified,
+search across every available historical season.
 
-Fixtures:
-→ get_upcoming_fixtures
+? Never invent seasons such as
+Mohamed Salah 2015-16
+unless the user explicitly requested that season.
 
-Recent results:
-→ get_recent_results
+? Call the most appropriate tool once.
 
-Team schedule:
-→ get_team_matches
+? Do not repeatedly call the same tool.
 
-Transfers/news:
-→ brave_search
+? After receiving tool output, answer immediately.
+
+? Keep answers factual.
+
+? Do not embellish or narrate statistics.
 
 '''
 
@@ -100,7 +96,7 @@ RULES
 
 def get_primary_client():
     return OpenAI(
-        base_url=OPENROUTER_BASE_URL,
+        base_url='https://openrouter.ai/api/v1',
         api_key=os.getenv('OPENROUTER_API_KEY'),
     )
 
@@ -221,113 +217,6 @@ Rules:
         return f'Here is what I found:\n\n{context}'
 
 
-def _extract_team_name(user_message: str) -> str:
-    common_teams = [
-        'arsenal', 'aston villa', 'bournemouth', 'brentford', 'brighton',
-        'burnley', 'chelsea', 'crystal palace', 'everton', 'fulham',
-        'liverpool', 'luton', 'manchester city', 'man city',
-        'manchester united', 'man united', 'newcastle', 'nottingham forest',
-        'sheffield united', 'spurs', 'tottenham', 'west ham', 'wolverhampton',
-        'wolves', 'leicester',
-    ]
-    lower_message = user_message.lower()
-    for team in common_teams:
-        if team in lower_message:
-            return team.title()
-    return ''
-
-
-def _build_direct_tool_context(user_message: str) -> tuple[str, list[str]]:
-    lower_message = user_message.lower()
-    sections = []
-    sources = []
-
-    if any(term in lower_message for term in [
-        'transfer', 'transfers', 'injury', 'news', 'rumour', 'rumor',
-        'signing', 'signed', 'loan', 'manager',
-    ]):
-        sections.append(brave_search(user_message))
-        sources.append('brave_search')
-
-    if any(term in lower_message for term in [
-        'standings', 'table', 'top of the premier league', 'top of the table',
-        'league position', 'current position',
-    ]):
-        sections.append(get_standings())
-        sources.append('get_standings')
-
-    if any(term in lower_message for term in [
-        'top scorer', 'leading scorer', 'scorer', 'goal scorer',
-    ]):
-        sections.append(get_top_scorers())
-        sources.append('get_top_scorers')
-
-    if any(term in lower_message for term in [
-        'recent result', 'recent results', 'latest result', 'latest results',
-        'recent match', 'latest match', 'scoreline', 'scores', 'results',
-    ]):
-        sections.append(get_recent_results())
-        sources.append('get_recent_results')
-
-    if any(term in lower_message for term in [
-        'upcoming fixture', 'upcoming fixtures', 'fixture', 'fixtures',
-        'next match', 'next games', 'next fixture', 'schedule',
-    ]):
-        sections.append(get_upcoming_fixtures())
-        sources.append('get_upcoming_fixtures')
-
-    team_name = _extract_team_name(user_message)
-    if team_name and any(term in lower_message for term in ['team', 'match', 'fixture', 'fixtures', 'results', 'games', 'for ', 'of ']):
-        sections.append(get_team_matches(team_name))
-        sources.append('get_team_matches')
-
-    if any(term in lower_message for term in [
-        'historical', 'compare', '2015', '2016', '2017', '2018', '2019',
-        '2020', '2021', '2022', '2023',
-    ]):
-        sections.append(search_historical_stats(user_message))
-        sources.append('search_historical_stats')
-
-    if not sections:
-        sections.append(brave_search(user_message))
-        sources.append('brave_search')
-
-    return '\n\n'.join(sections), sources
-
-
-def _answer_with_local_model(
-    user_message: str,
-    tool_context: str,
-    sources: list[str],
-) -> str:
-    client = OpenAI(
-        base_url=OLLAMA_BASE_URL,
-        api_key=os.getenv('OLLAMA_API_KEY', 'ollama'),
-    )
-    prompt = (
-        'You are a Premier League football research assistant.\n'
-        'Rewrite the provided tool output as a concise GitHub-flavored Markdown answer.\n'
-        'When the information is ranked or tabular, use a markdown table.\n'
-        'Keep names, spellings, numbers, and team names exactly as they appear in the tool output.\n'
-        'Do not invent facts or add extra commentary.\n\n'
-        f'User question:\n{user_message}\n\n'
-        f'Source tools:\n{", ".join(sources) if sources else "direct_router"}\n\n'
-        f'Tool output:\n{tool_context}\n'
-    )
-    try:
-        response = client.chat.completions.create(
-            model=FALLBACK_MODEL,
-            messages=[{'role': 'user', 'content': prompt}],
-            temperature=0,
-        )
-        if response.choices and response.choices[0].message.content:
-            return response.choices[0].message.content.strip()
-    except Exception:
-        pass
-
-    return tool_context or 'No answer generated.'
-
-
 def run_agent(
     user_message: str,
     memory: SessionMemory,
@@ -354,7 +243,7 @@ def run_agent(
 
     print(f'{DIM}Agent thinking... (model: {model}){RESET}')
 
-    max_iterations = 6
+    max_iterations = 4
     iteration = 0
     tool_call_counts = {}
     collected_results = []
@@ -366,11 +255,8 @@ def run_agent(
                 model=model,
                 messages=messages,
                 tools=TOOLS,
-                tool_choice="auto",
-                temperature=0,
-                top_p=0.9,
-                timeout=60,
-        )
+                tool_choice='auto',
+            )
         except Exception as e:
             print("="*70)
             print("PRIMARY MODEL FAILED")
@@ -411,11 +297,11 @@ def run_agent(
                 tool_name = tool_call.function.name
                 tool_call_counts[tool_name] = tool_call_counts.get(tool_name, 0) + 1
 
-                if tool_call_counts[tool_name] > 1:
+                if tool_call_counts[tool_name] > 2:
                     messages.append({
-                        "role": "tool",
-                        "tool_call_id": tool_call.id,
-                        "content": f"Already searched with {tool_name}. Use the previous result.",
+                        'role': 'tool',
+                        'tool_call_id': tool_call.id,
+                        'content': f'Already searched with {tool_name}. Use the results already collected to answer.',
                     })
                     continue
 
@@ -436,9 +322,7 @@ def run_agent(
 
                 post_tool_hook(tool_name, result)
                 collected_results.append(result)
-                memory.add_fact(
-                    f"{tool_name}: {result[:150]}"
-                )
+                memory.add_fact(f'Used {tool_name} for: {user_message[:50]}')
 
                 messages.append({
                     'role': 'tool',
@@ -454,6 +338,27 @@ def run_agent(
             break
 
     if collected_results:
-            return "\n\n".join(collected_results)
+        summary_client = get_primary_client()
+        try:
+            summary = summary_client.chat.completions.create(
+                model=model,
+                messages=[
+                    {
+                        'role': 'system',
+                        'content': 'Summarize this Premier League data clearly. Use markdown tables for stats.',
+                    },
+                    {
+                        'role': 'user',
+                        'content': f'Question: {user_message}\n\nData collected:\n{chr(10).join(collected_results[:3])}\n\nProvide a clear answer.',
+                    },
+                ],
+            )
+            if summary.choices and summary.choices[0].message.content:
+                return summary.choices[0].message.content
+        except Exception:
+            pass
+        return '\n\n'.join(collected_results[:2])
 
     return run_fallback_agent(user_message, memory)
+
+
