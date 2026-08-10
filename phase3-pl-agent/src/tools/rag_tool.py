@@ -2,88 +2,139 @@ import re
 import difflib
 import pandas as pd
 
-from src.ingest.pipeline import get_collection, get_player_collection
+from src.ingest.pipeline import (
+    get_collection,
+    get_player_collection,
+)
 
+# =====================================================
+# TEAM ALIASES & NAMES
+# =====================================================
 
 TEAM_ALIASES = {
     "man city": "manchester city",
     "manchester city fc": "manchester city",
+
     "man utd": "manchester united",
     "man united": "manchester united",
     "manchester united fc": "manchester united",
+
     "spurs": "tottenham",
     "tottenham hotspur": "tottenham",
-    "tottenham hotspur fc": "tottenham",
+
     "wolves": "wolverhampton",
     "wolverhampton wanderers": "wolverhampton",
-    "wolverhampton wanderers fc": "wolverhampton",
+
     "newcastle": "newcastle united",
-    "newcastle united fc": "newcastle united",
     "west ham": "west ham united",
-    "west ham united fc": "west ham united",
+
     "brighton": "brighton hove albion",
     "brighton & hove albion": "brighton hove albion",
-    "brighton & hove albion fc": "brighton hove albion",
+
     "forest": "nottingham forest",
-    "nottingham forest fc": "nottingham forest",
+
     "leicester": "leicester city",
-    "leicester city fc": "leicester city",
-    "arsenal fc": "arsenal",
-    "chelsea fc": "chelsea",
-    "liverpool fc": "liverpool",
-    "everton fc": "everton",
-    "burnley fc": "burnley",
-    "aston villa fc": "aston villa",
-    "crystal palace fc": "crystal palace",
-    "fulham fc": "fulham",
+
     "bournemouth": "afc bournemouth",
 }
 
+# Add teams that don't typically need aliases
+STANDARD_TEAMS = [
+    "arsenal", 
+    "aston villa", 
+    "chelsea", 
+    "crystal palace", 
+    "everton", 
+    "fulham", 
+    "liverpool", 
+    "luton town",
+    "sheffield united",
+    "brentford",
+    "burnley",
+    "sunderland afc",
+    "swansea city",
+    "hull city",
+    "middlesbrough",
+    "cardiff city",
+    "norwich city",
+    "watford"
+]
+
+# Combine both lists so every team is detectable
+TEAM_NAMES = sorted(set(list(TEAM_ALIASES.values()) + STANDARD_TEAMS))
+
+STAT_KEYWORDS = {
+    "goal",
+    "goals",
+    "assist",
+    "assists",
+    "yellow",
+    "red",
+    "minute",
+    "minutes",
+    "games",
+    "appearance",
+    "appearances",
+    "career",
+    "stats",
+    "statistics",
+    "season",
+    "player",
+}
+
+# =====================================================
+# NORMALIZE TEXT
+# =====================================================
 
 def normalize(text: str):
+
     text = text.lower()
+
     text = re.sub(r"[^\w\s]", " ", text)
 
     for old, new in TEAM_ALIASES.items():
         text = text.replace(old, new)
 
-    text = " ".join(text.split())
-    return text
+    return " ".join(text.split())
 
+# =====================================================
+# PLAYER DETECTOR
+# =====================================================
 
 def find_player(query, metadata):
-    """
-    Returns the player name if the query clearly refers to a player.
-    """
+
+    if not metadata:
+        return None
+
     names = sorted(
         list(
-            set(
+            {
                 m["player"]
                 for m in metadata
                 if "player" in m
-            )
+            }
         )
     )
 
     q = query.lower()
 
-    # Exact full name
+    # full name
     for name in names:
         if name.lower() in q:
             return name
 
-    # Last-name match
+    # surname
     for name in names:
         last = name.split()[-1].lower()
         if last in q:
             return name
 
-    # Fuzzy match
+    # fuzzy
     match = difflib.get_close_matches(
         q,
         [n.lower() for n in names],
         n=1,
-        cutoff=0.75,
+        cutoff=0.65,
     )
 
     if match:
@@ -93,254 +144,270 @@ def find_player(query, metadata):
 
     return None
 
+# =====================================================
+# QUERY TYPE
+# =====================================================
 
-# ----------------------------------------------------
-# 1. DATAFRAME VERSION (For Jupyter Notebook)
-# ----------------------------------------------------
-def search_historical_stats_df(query: str, n_results: int = 10):
-    
+def is_match_query(query):
+
     q = normalize(query)
 
-    # ----------------------------------------------------
-    # PLAYER DETECTION
-    # ----------------------------------------------------
-    stat_keywords = {
-        "goal", "goals",
-        "assist", "assists",
-        "yellow", "red",
-        "minute", "minutes",
-        "games", "appearance", "appearances",
-        "stats", "statistics",
-        "career", "player",
-        "season"
-    }
-
-    # Detect if the query is likely asking about a match
-    team_names = [
-        "arsenal", "chelsea", "liverpool",
-        "manchester city", "manchester united",
-        "tottenham", "everton", "aston villa",
-        "newcastle united", "leicester city",
-        "west ham united", "brighton hove albion",
-        "crystal palace", "wolverhampton",
-        "nottingham forest", "fulham",
-        "afc bournemouth", "burnley"
+    teams = [
+        team
+        for team in TEAM_NAMES
+        if team in q
     ]
 
-    team_count = sum(team in q for team in team_names)
+    return len(teams) >= 2
 
-    player_name = None
+def is_player_query(query):
 
-    # Only search the player database if this is NOT clearly a match query
-    if team_count < 2:
-        try:
-            player_collection = get_player_collection()
-            result = player_collection.query(
-                query_texts=[q],
-                n_results=10,
-            )
-            player_name = find_player(
-                q,
-                result["metadatas"][0]
-            )
-        except Exception:
-            player_name = None
+    q = normalize(query)
 
-    player_query = (
-        player_name is not None
-        or any(word in q for word in stat_keywords)
+    if any(word in q for word in STAT_KEYWORDS):
+        return True
+
+    if re.search(r"20\d{2}", q):
+        return True
+
+    return False
+
+def search_historical_stats_df(query: str, n_results: int = 25):
+
+    q = normalize(query)
+
+    # =====================================================
+    # PLAYER SEARCH
+    # =====================================================
+
+    player_collection = get_player_collection()
+
+    probe = player_collection.query(
+        query_texts=[q],
+        n_results=20,
     )
 
-    # ----------------------------------------------------
-    # PLAYER SEARCH
-    # ----------------------------------------------------
-    if player_query:
-        try:
-            collection = get_player_collection()
-            results = collection.query(
-                query_texts=[q],
-                n_results=50,
-            )
+    metadata = probe["metadatas"][0]
 
-            docs = results["documents"][0]
-            meta = results["metadatas"][0]
+    player_name = find_player(q, metadata)
 
-            if not meta:
-                return "No player statistics found."
+    if player_name:
 
-            year_match = re.search(r"(20\d{2})", q)
-            selected_year = None
+        results = player_collection.query(
+            query_texts=[q],
+            n_results=500,
+        )
 
-            if year_match:
-                selected_year = int(year_match.group(1))
+        metadata = results["metadatas"][0]
 
-            if player_name:
-                meta = [
-                    m
-                    for m in meta
-                    if m["player"] == player_name
-                ]
+        if player_name:
+            metadata = [
+                row
+                for row in metadata
+                if row["player"] == player_name
+            ]
 
-            if selected_year:
-                meta = [
-                    m
-                    for m in meta
-                    if m["year"] == selected_year
-                ]
+        year_match = re.search(r"(20\d{2})", q)
 
-            if not meta:
-                return "No player statistics found."
+        if year_match:
 
-            meta.sort(key=lambda x: x["year"])
+            year = int(year_match.group(1))
 
-            total_games = 0
-            total_minutes = 0
-            total_goals = 0
-            total_assists = 0
-            total_yellow = 0
-            total_red = 0
+            metadata = [
+                row
+                for row in metadata
+                if row["season"] == year
+            ]
 
-            player = meta[0]["player"]
-            season_rows = []
+        if len(metadata) == 0:
+            return "No player statistics found."
 
-            for m in meta:
-                total_games += m.get("games", 0)
-                total_minutes += m.get("minutes", 0)
-                total_goals += m.get("goals", 0)
-                total_assists += m.get("assists", 0)
-                total_yellow += m.get("yellow_cards", 0)
-                total_red += m.get("red_cards", 0)
+        metadata = sorted(
+            metadata,
+            key=lambda x: x["season"],
+        )
 
-                season_rows.append({
-                    "Season": m["year"],
-                    "Games": m["games"],
-                    "Minutes": m["minutes"],
-                    "Goals": m["goals"],
-                    "Assists": m["assists"],
-                    "Yellow Cards": m["yellow_cards"],
-                    "Red Cards": m["red_cards"],
-                })
+        season_rows = []
 
-            career_df = pd.DataFrame([{
-                "Player": player,
-                "Games": total_games,
-                "Minutes": total_minutes,
-                "Goals": total_goals,
-                "Assists": total_assists,
-                "Yellow Cards": total_yellow,
-                "Red Cards": total_red,
-            }])
+        total_games = 0
+        total_minutes = 0
+        total_goals = 0
+        total_assists = 0
+        total_yellow = 0
+        total_red = 0
 
-            season_df = pd.DataFrame(season_rows)
+        for row in metadata:
 
-            return {
-                "career": career_df,
-                "season": season_df,
-            }
+            total_games += row.get("games", 0)
+            total_minutes += row.get("minutes", 0)
+            total_goals += row.get("goals", 0)
+            total_assists += row.get("assists", 0)
+            total_yellow += row.get("yellow_cards", 0)
+            total_red += row.get("red_cards", 0)
 
-        except Exception as e:
-            return f"Player search failed: {e}"
-
-    # ----------------------------------------------------
-    # MATCH SEARCH
-    # ----------------------------------------------------
-    try:
-        collection = get_collection()
-        all_data = collection.get()
-        docs = all_data["documents"]
-
-        requested = []
-        for team in team_names:
-            if team in q:
-                requested.append(team)
-
-        matches = []
-        for doc in docs:
-            home = re.search(r"Home Team:\s*(.*?)\.", doc)
-            away = re.search(r"Away Team:\s*(.*?)\.", doc)
-
-            if not home or not away:
-                continue
-
-            home_team = normalize(home.group(1))
-            away_team = normalize(away.group(1))
-
-            if len(requested) >= 2:
-                if (
-                    requested[0] in home_team
-                    and requested[1] in away_team
-                ) or (
-                    requested[1] in home_team
-                    and requested[0] in away_team
-                ):
-                    matches.append(doc)
-
-            elif len(requested) == 1:
-                if (
-                    requested[0] in home_team
-                    or requested[0] in away_team
-                ):
-                    matches.append(doc)
-
-        if not matches:
-            return "No historical matches found."
-
-        rows = []
-        for doc in matches:
-            season = re.search(r"Season:\s*(.*?)\.", doc)
-            matchday = re.search(r"Matchday:\s*(.*?)\.", doc)
-            competition = re.search(r"Competition:\s*(.*?)\.", doc)
-            home = re.search(r"Home Team:\s*(.*?)\.", doc)
-            away = re.search(r"Away Team:\s*(.*?)\.", doc)
-            score = re.search(r"Score:\s*([0-9\-]+)", doc)
-            winner = re.search(r"Winner:\s*(.*?)\.", doc)
-
-            rows.append({
-                "Season": season.group(1) if season else "-",
-                "Matchday": matchday.group(1).replace("▪","").strip() if matchday else "-",
-                "Home": home.group(1).replace(" FC","") if home else "-",
-                "Score": score.group(1) if score else "-",
-                "Away": away.group(1).replace(" FC","") if away else "-",
-                "Winner": winner.group(1).replace(" FC","") if winner else "-",
+            season_rows.append({
+                "Season": row["season"],
+                "Club": row["team"],
+                "Games": row["games"],
+                "Minutes": row["minutes"],
+                "Goals": row["goals"],
+                "Assists": row["assists"],
+                "Yellow Cards": row["yellow_cards"],
+                "Red Cards": row["red_cards"],
             })
 
-        df = pd.DataFrame(rows)
+        career_df = pd.DataFrame([{
+            "Player": metadata[0]["player"],
+            "Games": total_games,
+            "Minutes": total_minutes,
+            "Goals": total_goals,
+            "Assists": total_assists,
+            "Yellow Cards": total_yellow,
+            "Red Cards": total_red,
+        }])
+
+        season_df = pd.DataFrame(season_rows)
+
+        return {
+            "career": career_df,
+            "season": season_df,
+        }
+
+    # =====================================================
+    # MATCH SEARCH
+    # =====================================================
+
+    collection = get_collection()
+
+    results = collection.query(
+        query_texts=[q],
+        n_results=n_results,
+    )
+
+    docs = results["documents"][0]
+
+    if len(docs) == 0:
+        return "No historical matches found."
+
+    requested_teams = [
+        team
+        for team in TEAM_NAMES
+        if team in q
+    ]
+
+    rows = []
+
+    for doc in docs:
+
+        season = re.search(r"Season:\s*(.*?)\.", doc)
+        competition = re.search(r"Competition:\s*(.*?)\.", doc)
+        matchday = re.search(r"Matchday:\s*(.*?)\.", doc)
+        home = re.search(r"Home Team:\s*(.*?)\.", doc)
+        away = re.search(r"Away Team:\s*(.*?)\.", doc)
+        score = re.search(r"Score:\s*([0-9\-]+)", doc)
+        winner = re.search(r"Winner:\s*(.*?)\.", doc)
+
+        if not home or not away:
+            continue
+
+        home_team = normalize(home.group(1))
+        away_team = normalize(away.group(1))
+
+        if len(requested_teams) >= 2:
+
+            if not (
+                (
+                    requested_teams[0] in home_team
+                    and requested_teams[1] in away_team
+                )
+                or
+                (
+                    requested_teams[1] in home_team
+                    and requested_teams[0] in away_team
+                )
+            ):
+                continue
+
+        elif len(requested_teams) == 1:
+
+            if (
+                requested_teams[0] not in home_team
+                and
+                requested_teams[0] not in away_team
+            ):
+                continue
+
+        rows.append({
+            "Season": season.group(1) if season else "-",
+            "Competition": competition.group(1) if competition else "-",
+            "Matchday": matchday.group(1).strip() if matchday else "-",
+            "Home": home.group(1).replace(" FC", ""),
+            "Score": score.group(1) if score else "-",
+            "Away": away.group(1).replace(" FC", ""),
+            "Winner": winner.group(1).replace(" FC", "") if winner else "-",
+        })
+
+    if len(rows) == 0:
+        return "No historical matches found."
+
+    df = pd.DataFrame(rows)
+
+    if "Season" in df.columns:
         df = df.sort_values("Season")
 
-        return df
+    return df
 
-    except Exception as e:
-        return f"Historical search failed: {e}"
-
-
-# ----------------------------------------------------
-# 2. STRING VERSION (For RAG Agent Tools)
-# ----------------------------------------------------
-def search_historical_stats(query: str, n_results: int = 10) -> str:
+def search_historical_stats(query: str, n_results: int = 25) -> str:
     """
-    Wrapper that executes the search and guarantees a string return type 
-    so the agent pipeline context builder does not break.
+    Wrapper for the RAG agent.
+
+    The notebook uses:
+        search_historical_stats_df()
+
+    The agent uses:
+        search_historical_stats()
+
+    Always returns a string.
     """
+
     result = search_historical_stats_df(query, n_results)
 
-    # 1. Handle error strings or "not found" messages
+    # -----------------------------
+    # Error messages
+    # -----------------------------
     if isinstance(result, str):
         return result
 
-    # 2. Handle Player Dictionary format
-    if isinstance(result, dict) and "career" in result and "season" in result:
-        # Using .to_string(index=False) safely converts DataFrame to a text grid
-        career_str = result["career"].to_string(index=False)
-        season_str = result["season"].to_string(index=False)
-        
+    # -----------------------------
+    # Player search
+    # -----------------------------
+    if isinstance(result, dict):
+
+        career_df = result["career"]
+        season_df = result["season"]
+
+        try:
+            career = career_df.to_markdown(index=False)
+            season = season_df.to_markdown(index=False)
+        except Exception:
+            career = career_df.to_string(index=False)
+            season = season_df.to_string(index=False)
+
         return (
-            f"Player Career Stats:\n{career_str}\n\n"
-            f"Player Season Stats:\n{season_str}"
+            "# PLAYER CAREER SUMMARY\n\n"
+            f"{career}\n\n"
+            "# PLAYER SEASON BREAKDOWN\n\n"
+            f"{season}"
         )
 
-    # 3. Handle Match DataFrame format
+    # -----------------------------
+    # Historical matches
+    # -----------------------------
     if isinstance(result, pd.DataFrame):
-        return result.to_string(index=False)
 
-    # 4. Catch-all fallback
+        try:
+            return result.to_markdown(index=False)
+        except Exception:
+            return result.to_string(index=False)
+
     return str(result)

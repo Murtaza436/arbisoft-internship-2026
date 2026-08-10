@@ -1,5 +1,6 @@
+import os 
 from src.constants import MEMORY_COLOR, RESET
-
+import json 
 
 DEFAULT_MEMORY_FILE = os.path.join('logs', 'session_memory.json')
 
@@ -10,6 +11,7 @@ class SessionMemory:
     MAX_HISTORY = 20
 
     def __init__(self):
+        self.memory_file = DEFAULT_MEMORY_FILE
         self.facts = []
         self.conversation_history = []
         self._load()
@@ -40,7 +42,6 @@ class SessionMemory:
             )
 
     def add_fact(self, fact: str):
-
         if not fact:
             return
 
@@ -57,6 +58,8 @@ class SessionMemory:
         if len(self.facts) > self.MAX_FACTS:
             self.facts.pop(0)
 
+        self._save()        # <-- ADD THIS
+
         print(f"{MEMORY_COLOR}[Memory] Stored: {fact}{RESET}")
 
     def get_facts(self) -> str:
@@ -67,20 +70,18 @@ class SessionMemory:
         return "\n".join(f"- {fact}" for fact in self.facts)
 
     def add_message(self, role: str, content: str):
-
         if not content:
             return
 
-        self.conversation_history.append(
-            {
-                "role": role,
-                "content": content,
-            }
-        )
-        self._save()
+        self.conversation_history.append({
+            "role": role,
+            "content": content,
+        })
 
         if len(self.conversation_history) > self.MAX_HISTORY:
             self.conversation_history.pop(0)
+
+        self._save()
 
     def get_history(self) -> list:
         return self.conversation_history
@@ -89,6 +90,9 @@ class SessionMemory:
         return self.conversation_history[-n:]
 
     def clear(self):
-        self.facts.clear()
-        self.conversation_history.clear()
+        self.facts = []
+        self.conversation_history = []
+
+        self._save()
+
         print(f"{MEMORY_COLOR}[Memory] Cleared.{RESET}")

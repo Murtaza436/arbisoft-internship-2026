@@ -18,6 +18,7 @@ from src.constants import RESET, DIM
 
 load_dotenv()
 
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 DEFAULT_MODEL = 'deepseek/deepseek-v4-flash'
 FALLBACK_MODEL = 'tinyllama:latest'
 
@@ -41,7 +42,8 @@ You MUST answer every football question using one of the provided tools.
 
 Do not answer from memory.
 
-Choose exactly one tool.
+Choose exactly one tool when one tool is sufficient.
+Use multiple tools only when the question genuinely requires comparison or multi-hop reasoning.
 
 Wait for the tool output.
 
@@ -51,31 +53,79 @@ Never call the same tool twice.
 
 If the tool returns "No data", answer exactly that.
 
-Historical player questions:
+HISTORICAL PLAYER QUESTIONS
 → search_historical_stats
 
-Historical match questions:
+HISTORICAL MATCH QUESTIONS
 → search_historical_stats
 
-Current standings:
+CURRENT STANDINGS
 → get_standings
 
-Current top scorers:
+CURRENT TOP SCORERS
 → get_top_scorers
 
-Fixtures:
+FIXTURES
 → get_upcoming_fixtures
 
-Recent results:
+RECENT RESULTS
 → get_recent_results
 
-Team schedule:
+TEAM SCHEDULE
 → get_team_matches
 
-Transfers/news:
+TRANSFERS / NEWS
 → brave_search
 
+
+OUTPUT FORMAT RULES
+
+When comparing two or more players, teams, seasons, competitions,
+or historical campaigns, ALWAYS use a Markdown table.
+
+Examples include:
+
+- Mohamed Salah vs Erling Haaland
+- Leicester City 2015-16 vs Liverpool 2019-20
+- Liverpool 2019-20 vs Liverpool current season
+- Two players' career statistics
+- Two clubs' historical records
+- Current player vs historical player
+- Current season vs historical season
+
+For comparisons, prefer a structure like:
+
+| Stat | Option A | Option B | Difference |
+|---|---:|---:|---:|
+
+When comparing seasons or teams, include the most relevant
+available statistics such as points, wins, draws, losses,
+goals, goal difference, position, or other statistics returned
+by the tools.
+
+When comparing players, include relevant available statistics
+such as games, minutes, goals, assists, yellow cards, and red
+cards.
+
+If a value is not available from the tool output, use "—".
+Never invent a missing statistic.
+
+For rankings, standings, scorers, fixtures, and results,
+use Markdown tables whenever the data is naturally tabular.
+
+For ordinary questions that only need one or two facts,
+a short answer is acceptable.
+
+For comparison questions:
+1. Give a short heading.
+2. Give the comparison table.
+3. Give a short factual conclusion.
+4. Do not add unsupported statistics.
+
+Preserve all numbers and facts returned by the tools.
+Do not invent information.
 '''
+
 
 FALLBACK_SYSTEM_PROMPT = '''You are a Premier League football assistant.
 
@@ -454,6 +504,10 @@ def run_agent(
             break
 
     if collected_results:
-            return "\n\n".join(collected_results)
+        final_answer = "\n\n".join(collected_results)
+        memory.add_message('assistant', final_answer) # Saves raw data to memory
+        return final_answer
 
-    return run_fallback_agent(user_message, memory)
+    fallback_answer = run_fallback_agent(user_message, memory)
+    memory.add_message('assistant', fallback_answer) # Saves fallback to memory
+    return fallback_answer
