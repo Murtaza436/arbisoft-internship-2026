@@ -91,9 +91,16 @@ STANDARD_TEAMS = [
 
 
 TEAM_NAMES = sorted(
-    set(list(TEAM_ALIASES.values()) + STANDARD_TEAMS)
+    set(
+        list(TEAM_ALIASES.values())
+        + STANDARD_TEAMS
+    )
 )
 
+
+# =====================================================
+# STAT KEYWORDS
+# =====================================================
 
 STAT_KEYWORDS = {
     "goal",
@@ -116,17 +123,38 @@ STAT_KEYWORDS = {
 
 
 # =====================================================
+# TOP SCORER KEYWORDS
+# =====================================================
+
+TOP_SCORER_KEYWORDS = [
+    "top scorer",
+    "top scorers",
+    "top scoring",
+    "leading scorer",
+    "leading scorers",
+    "leading goal scorer",
+    "leading goal scorers",
+    "most goals",
+    "highest goals",
+    "highest goal scorer",
+    "highest goal scorers",
+    "golden boot",
+    "golden boot winner",
+    "who scored the most",
+    "who has the most goals",
+]
+
+
+# =====================================================
 # TEXT NORMALIZATION
 # =====================================================
 
 def normalize(text: str) -> str:
     """
-    Normalize user queries and team names so that aliases
-    such as 'Man City' and 'Manchester City' are treated
-    consistently.
+    Normalize text and common team aliases.
     """
 
-    text = text.lower()
+    text = str(text).lower()
 
     text = re.sub(
         r"[^\w\s]",
@@ -135,64 +163,134 @@ def normalize(text: str) -> str:
     )
 
     for old, new in TEAM_ALIASES.items():
-        text = text.replace(old, new)
+        text = text.replace(
+            old,
+            new,
+        )
 
     return " ".join(text.split())
+
+
+# =====================================================
+# YEAR / SEASON DETECTION
+# =====================================================
+
+def extract_year(query: str):
+    """
+    Extract a four-digit year from a query.
+
+    Example:
+        'top scorer 2021'
+        -> 2021
+    """
+
+    match = re.search(
+        r"\b(20\d{2})\b",
+        query,
+    )
+
+    if match:
+        return int(match.group(1))
+
+    return None
+
+
+def extract_season(query: str):
+    """
+    Extract a season written as:
+
+        2020-21
+        2021-22
+        2019/20
+
+    Returns the starting year.
+
+    Example:
+        'top scorer 2020-21'
+        -> 2020
+    """
+
+    match = re.search(
+        r"\b(20\d{2})[-/](\d{2})\b",
+        query,
+    )
+
+    if match:
+        return int(match.group(1))
+
+    return None
+
+
+# =====================================================
+# TOP SCORER DETECTION
+# =====================================================
+
+def is_top_scorer_query(query: str) -> bool:
+    """
+    Detect leaderboard/top-scorer questions.
+    """
+
+    q = normalize(query)
+
+    return any(
+        phrase in q
+        for phrase in TOP_SCORER_KEYWORDS
+    )
 
 
 # =====================================================
 # PLAYER DETECTION
 # =====================================================
 
-def find_player(query: str, metadata):
+def find_player(
+    query: str,
+    metadata,
+):
     """
-    Find a player name from a query.
+    Detect a player using:
 
-    Detection order:
-
-    1. Exact full-name match
-    2. First-name + surname match
-    3. Unique surname match
-    4. Fuzzy player-name match
-
-    Unlike the previous version, this function receives
-    metadata from the entire player collection rather than
-    only Chroma's top semantic-search results.
+    1. Full name
+    2. First name + surname
+    3. Unique surname
+    4. Fuzzy matching
     """
 
     if not metadata:
         return None
 
     names = sorted(
-        list(
-            {
-                m["player"]
-                for m in metadata
-                if m.get("player")
-            }
-        )
+        {
+            m["player"]
+            for m in metadata
+            if m.get("player")
+        }
     )
 
     q = normalize(query)
 
-    q_words = set(q.split())
+    q_words = set(
+        q.split()
+    )
 
     # -------------------------------------------------
-    # 1. Exact full-name match
+    # Exact full name
     # -------------------------------------------------
 
     for name in names:
 
-        if name.lower() in q:
+        if normalize(name) in q:
+
             return name
 
     # -------------------------------------------------
-    # 2. First name + surname
+    # First name + surname
     # -------------------------------------------------
 
     for name in names:
 
-        name_words = name.lower().split()
+        name_words = normalize(
+            name
+        ).split()
 
         if len(name_words) >= 2:
 
@@ -203,50 +301,67 @@ def find_player(query: str, metadata):
                 first_name in q_words
                 and surname in q_words
             ):
+
                 return name
 
     # -------------------------------------------------
-    # 3. Unique surname
+    # Unique surname
     # -------------------------------------------------
 
     surname_matches = []
 
     for name in names:
 
-        surname = name.split()[-1].lower()
+        surname = (
+            normalize(name)
+            .split()[-1]
+        )
 
         if surname in q_words:
-            surname_matches.append(name)
+
+            surname_matches.append(
+                name
+            )
 
     if len(surname_matches) == 1:
+
         return surname_matches[0]
 
     # -------------------------------------------------
-    # 4. Fuzzy matching
+    # Fuzzy matching
     # -------------------------------------------------
 
     query_words = [
         word
         for word in q.split()
         if word not in STAT_KEYWORDS
+        and word not in TOP_SCORER_KEYWORDS
     ]
 
-    player_query = " ".join(query_words).strip()
+    player_query = " ".join(
+        query_words
+    ).strip()
 
     if player_query:
 
-        match = difflib.get_close_matches(
+        matches = difflib.get_close_matches(
             player_query,
-            [name.lower() for name in names],
+            [
+                normalize(name)
+                for name in names
+            ],
             n=1,
             cutoff=0.65,
         )
 
-        if match:
+        if matches:
+
+            matched = matches[0]
 
             for name in names:
 
-                if name.lower() == match[0]:
+                if normalize(name) == matched:
+
                     return name
 
     return None
@@ -256,13 +371,12 @@ def find_player(query: str, metadata):
 # PLAYER RECORD RETRIEVAL
 # =====================================================
 
-def get_player_records(player_name: str):
+def get_player_records(
+    player_name: str,
+):
     """
-    Retrieve every historical record belonging to one
-    specific player.
-
-    This uses Chroma metadata filtering rather than
-    semantic search because the player name is already known.
+    Retrieve all records belonging to
+    one specific player using metadata.
     """
 
     collection = get_player_collection()
@@ -270,7 +384,10 @@ def get_player_records(player_name: str):
     results = collection.get(
         where={
             "player": player_name
-        }
+        },
+        include=[
+            "metadatas"
+        ],
     )
 
     return results.get(
@@ -280,10 +397,175 @@ def get_player_records(player_name: str):
 
 
 # =====================================================
+# TOP SCORER SEARCH
+# =====================================================
+
+def search_top_scorers(
+    query: str,
+    n_results: int = 10,
+):
+    """
+    Find the highest-scoring players for a
+    requested season.
+
+    This MUST happen before normal player
+    or historical match search.
+    """
+
+    collection = get_player_collection()
+
+    # -------------------------------------------------
+    # Determine requested season
+    # -------------------------------------------------
+
+    season = extract_season(query)
+
+    if season is None:
+
+        year = extract_year(query)
+
+        if year is None:
+
+            return (
+                "Please specify a Premier League "
+                "season or year."
+            )
+
+        # ---------------------------------------------
+        # Interpret a plain year as the season
+        # beginning in that year.
+        #
+        # Example:
+        # 2021 -> 2021-22 dataset
+        #
+        # If your dataset instead stores 2021
+        # for 2020-21, change this mapping.
+        # ---------------------------------------------
+
+        season = year
+
+    # -------------------------------------------------
+    # Retrieve complete player metadata
+    # -------------------------------------------------
+
+    results = collection.get(
+        include=[
+            "metadatas"
+        ],
+    )
+
+    metadata = results.get(
+        "metadatas",
+        [],
+    )
+
+    if not metadata:
+
+        return "No player statistics found."
+
+    # -------------------------------------------------
+    # Filter season
+    # -------------------------------------------------
+
+    season_rows = [
+        row
+        for row in metadata
+        if row.get("season") == season
+    ]
+
+    if not season_rows:
+
+        return (
+            f"No player statistics found for "
+            f"season {season}."
+        )
+
+    # -------------------------------------------------
+    # Build dataframe
+    # -------------------------------------------------
+
+    rows = []
+
+    for row in season_rows:
+
+        rows.append(
+            {
+                "Player": row.get(
+                    "player",
+                    "-",
+                ),
+                "Team": row.get(
+                    "team",
+                    "-",
+                ),
+                "Games": row.get(
+                    "games",
+                    0,
+                ),
+                "Minutes": row.get(
+                    "minutes",
+                    0,
+                ),
+                "Goals": row.get(
+                    "goals",
+                    0,
+                ),
+                "Assists": row.get(
+                    "assists",
+                    0,
+                ),
+                "Yellow Cards": row.get(
+                    "yellow_cards",
+                    0,
+                ),
+                "Red Cards": row.get(
+                    "red_cards",
+                    0,
+                ),
+            }
+        )
+
+    df = pd.DataFrame(
+        rows
+    )
+
+    if df.empty:
+
+        return "No player statistics found."
+
+    # -------------------------------------------------
+    # Sort by goals
+    # -------------------------------------------------
+
+    df = df.sort_values(
+        [
+            "Goals",
+            "Assists",
+        ],
+        ascending=[
+            False,
+            False,
+        ],
+    )
+
+    # -------------------------------------------------
+    # Return top players
+    # -------------------------------------------------
+
+    return df.head(
+        n_results
+    ).reset_index(
+        drop=True
+    )
+
+
+# =====================================================
 # QUERY TYPE
 # =====================================================
 
-def is_match_query(query: str):
+def is_match_query(
+    query: str,
+):
 
     q = normalize(query)
 
@@ -296,7 +578,9 @@ def is_match_query(query: str):
     return len(teams) >= 2
 
 
-def is_player_query(query: str):
+def is_player_query(
+    query: str,
+):
 
     q = normalize(query)
 
@@ -304,12 +588,14 @@ def is_player_query(query: str):
         word in q
         for word in STAT_KEYWORDS
     ):
+
         return True
 
     if re.search(
         r"20\d{2}",
         q,
     ):
+
         return True
 
     return False
@@ -327,30 +613,30 @@ def search_historical_stats_df(
     q = normalize(query)
 
     # =================================================
-    # PLAYER SEARCH
+    # 1. TOP SCORER / LEADERBOARD QUERY
+    # =================================================
+
+    if is_top_scorer_query(q):
+
+        return search_top_scorers(
+            q,
+            n_results=n_results,
+        )
+
+    # =================================================
+    # 2. PLAYER SEARCH
     # =================================================
 
     player_collection = get_player_collection()
 
-    # -------------------------------------------------
-    # IMPORTANT FIX:
-    #
-    # Previously we used:
-    #
-    #     collection.query(..., n_results=20)
-    #
-    # and attempted to identify the player from only
-    # those 20 semantic results.
-    #
-    # That could fail even when the player existed in
-    # the database.
-    #
-    # We now retrieve the complete metadata list for
-    # reliable player-name detection.
-    # -------------------------------------------------
+    # Get all player metadata so that a player is not
+    # missed because semantic search ranked their record
+    # too low.
 
     probe = player_collection.get(
-        include=["metadatas"]
+        include=[
+            "metadatas"
+        ],
     )
 
     all_player_metadata = probe.get(
@@ -363,52 +649,50 @@ def search_historical_stats_df(
         all_player_metadata,
     )
 
-    # =================================================
-    # PLAYER SEARCH
-    # =================================================
-
     if player_name:
-
-        # -------------------------------------------------
-        # Retrieve the player's records directly.
-        #
-        # No semantic search is necessary once we know
-        # the exact player name.
-        # -------------------------------------------------
 
         metadata = get_player_records(
             player_name
         )
 
-        if len(metadata) == 0:
-            return "No player statistics found."
+        if not metadata:
+
+            return (
+                "No player statistics found."
+            )
 
         # -------------------------------------------------
-        # Filter by season/year if supplied
+        # Season filter
         # -------------------------------------------------
 
-        year_match = re.search(
-            r"(20\d{2})",
-            q,
+        requested_season = extract_season(
+            q
         )
 
-        if year_match:
+        if requested_season is None:
 
-            year = int(
-                year_match.group(1)
+            requested_season = extract_year(
+                q
             )
+
+        if requested_season is not None:
 
             metadata = [
                 row
                 for row in metadata
-                if row.get("season") == year
+                if row.get(
+                    "season"
+                ) == requested_season
             ]
 
-        if len(metadata) == 0:
-            return "No player statistics found."
+        if not metadata:
+
+            return (
+                "No player statistics found."
+            )
 
         # -------------------------------------------------
-        # Sort records by season
+        # Sort by season
         # -------------------------------------------------
 
         metadata = sorted(
@@ -420,7 +704,7 @@ def search_historical_stats_df(
         )
 
         # -------------------------------------------------
-        # Build season table
+        # Build season rows
         # -------------------------------------------------
 
         season_rows = []
@@ -521,20 +805,28 @@ def search_historical_stats_df(
         }
 
     # =================================================
-    # HISTORICAL MATCH SEARCH
+    # 3. HISTORICAL MATCH SEARCH
     # =================================================
 
     collection = get_collection()
 
     results = collection.query(
-        query_texts=[q],
+        query_texts=[
+            q
+        ],
         n_results=n_results,
     )
 
-    docs = results["documents"][0]
+    docs = results.get(
+        "documents",
+        [[]],
+    )[0]
 
-    if len(docs) == 0:
-        return "No historical matches found."
+    if not docs:
+
+        return (
+            "No historical matches found."
+        )
 
     requested_teams = [
         team
@@ -582,6 +874,7 @@ def search_historical_stats_df(
         )
 
         if not home or not away:
+
             continue
 
         home_team = normalize(
@@ -598,19 +891,25 @@ def search_historical_stats_df(
 
         if len(requested_teams) >= 2:
 
-            if not (
+            team_a = requested_teams[0]
+            team_b = requested_teams[1]
+
+            valid_match = (
                 (
-                    requested_teams[0] in home_team
+                    team_a in home_team
                     and
-                    requested_teams[1] in away_team
+                    team_b in away_team
                 )
                 or
                 (
-                    requested_teams[1] in home_team
+                    team_b in home_team
                     and
-                    requested_teams[0] in away_team
+                    team_a in away_team
                 )
-            ):
+            )
+
+            if not valid_match:
+
                 continue
 
         # -------------------------------------------------
@@ -619,13 +918,14 @@ def search_historical_stats_df(
 
         elif len(requested_teams) == 1:
 
+            team = requested_teams[0]
+
             if (
-                requested_teams[0]
-                not in home_team
+                team not in home_team
                 and
-                requested_teams[0]
-                not in away_team
+                team not in away_team
             ):
+
                 continue
 
         rows.append(
@@ -650,7 +950,10 @@ def search_historical_stats_df(
 
                 "Home": (
                     home.group(1)
-                    .replace(" FC", "")
+                    .replace(
+                        " FC",
+                        "",
+                    )
                     if home
                     else "-"
                 ),
@@ -663,24 +966,35 @@ def search_historical_stats_df(
 
                 "Away": (
                     away.group(1)
-                    .replace(" FC", "")
+                    .replace(
+                        " FC",
+                        "",
+                    )
                     if away
                     else "-"
                 ),
 
                 "Winner": (
                     winner.group(1)
-                    .replace(" FC", "")
+                    .replace(
+                        " FC",
+                        "",
+                    )
                     if winner
                     else "-"
                 ),
             }
         )
 
-    if len(rows) == 0:
-        return "No historical matches found."
+    if not rows:
 
-    df = pd.DataFrame(rows)
+        return (
+            "No historical matches found."
+        )
+
+    df = pd.DataFrame(
+        rows
+    )
 
     if "Season" in df.columns:
 
@@ -688,7 +1002,9 @@ def search_historical_stats_df(
             "Season"
         )
 
-    return df
+    return df.reset_index(
+        drop=True
+    )
 
 
 # =====================================================
@@ -701,12 +1017,12 @@ def search_historical_stats(
 ) -> str:
 
     """
-    Wrapper for the RAG agent.
+    Wrapper used by the agent.
 
-    Notebook:
+    Dataframe mode:
         search_historical_stats_df()
 
-    Agent:
+    Agent mode:
         search_historical_stats()
 
     Always returns a string.
@@ -721,19 +1037,50 @@ def search_historical_stats(
     # ERROR / NO DATA
     # =================================================
 
-    if isinstance(result, str):
+    if isinstance(
+        result,
+        str,
+    ):
 
         return result
+
+    # =================================================
+    # TOP SCORER DATAFRAME
+    # =================================================
+
+    if isinstance(
+        result,
+        pd.DataFrame,
+    ):
+
+        try:
+
+            return result.to_markdown(
+                index=False
+            )
+
+        except Exception:
+
+            return result.to_string(
+                index=False
+            )
 
     # =================================================
     # PLAYER STATISTICS
     # =================================================
 
-    if isinstance(result, dict):
+    if isinstance(
+        result,
+        dict,
+    ):
 
-        career_df = result["career"]
+        career_df = result[
+            "career"
+        ]
 
-        season_df = result["season"]
+        season_df = result[
+            "season"
+        ]
 
         try:
 
@@ -763,28 +1110,9 @@ def search_historical_stats(
         )
 
     # =================================================
-    # HISTORICAL MATCHES
-    # =================================================
-
-    if isinstance(
-        result,
-        pd.DataFrame,
-    ):
-
-        try:
-
-            return result.to_markdown(
-                index=False
-            )
-
-        except Exception:
-
-            return result.to_string(
-                index=False
-            )
-
-    # =================================================
     # FALLBACK
     # =================================================
 
-    return str(result)
+    return str(
+        result
+    )
