@@ -390,12 +390,12 @@ elif st.session_state.page == "Player Comparison":
     if st.button("Compare Players"):
 
         q1 = search_historical_stats_df(
-            player1,
+            f"{player1} player statistics goals assists games minutes",
             n_results=500,
         )
 
         q2 = search_historical_stats_df(
-            player2,
+            f"{player2} player statistics goals assists games minutes",
             n_results=500,
         )
 

@@ -7,6 +7,7 @@ from src.ingest.pipeline import (
     get_player_collection,
 )
 
+
 # =====================================================
 # TEAM ALIASES & NAMES
 # =====================================================
@@ -21,47 +22,85 @@ TEAM_ALIASES = {
 
     "spurs": "tottenham",
     "tottenham hotspur": "tottenham",
+    "tottenham hotspur fc": "tottenham",
 
     "wolves": "wolverhampton",
     "wolverhampton wanderers": "wolverhampton",
+    "wolverhampton wanderers fc": "wolverhampton",
 
     "newcastle": "newcastle united",
+    "newcastle united fc": "newcastle united",
+
     "west ham": "west ham united",
+    "west ham united fc": "west ham united",
 
     "brighton": "brighton hove albion",
     "brighton & hove albion": "brighton hove albion",
+    "brighton & hove albion fc": "brighton hove albion",
 
     "forest": "nottingham forest",
+    "nottingham forest fc": "nottingham forest",
 
     "leicester": "leicester city",
+    "leicester city fc": "leicester city",
 
     "bournemouth": "afc bournemouth",
+    "afc bournemouth": "afc bournemouth",
+
+    "arsenal fc": "arsenal",
+    "chelsea fc": "chelsea",
+    "liverpool fc": "liverpool",
+    "aston villa fc": "aston villa",
+    "everton fc": "everton",
+    "burnley fc": "burnley",
+    "crystal palace fc": "crystal palace",
+    "fulham fc": "fulham",
 }
 
-# Add teams that don't typically need aliases
+
 STANDARD_TEAMS = [
-    "arsenal", 
-    "aston villa", 
-    "chelsea", 
-    "crystal palace", 
-    "everton", 
-    "fulham", 
-    "liverpool", 
+    "arsenal",
+    "aston villa",
+    "afc bournemouth",
+    "brighton hove albion",
+    "burnley",
+    "chelsea",
+    "crystal palace",
+    "everton",
+    "fulham",
+    "leicester city",
+    "liverpool",
+    "manchester city",
+    "manchester united",
+    "newcastle united",
+    "nottingham forest",
+    "tottenham",
+    "west ham united",
+    "wolverhampton",
     "luton town",
     "sheffield united",
     "brentford",
-    "burnley",
     "sunderland afc",
     "swansea city",
     "hull city",
     "middlesbrough",
     "cardiff city",
     "norwich city",
-    "watford"
+    "watford",
 ]
 
-# Combine both lists so every team is detectable
-TEAM_NAMES = sorted(set(list(TEAM_ALIASES.values()) + STANDARD_TEAMS))
+
+TEAM_NAMES = sorted(
+    set(
+        list(TEAM_ALIASES.values())
+        + STANDARD_TEAMS
+    )
+)
+
+
+# =====================================================
+# STAT KEYWORDS
+# =====================================================
 
 STAT_KEYWORDS = {
     "goal",
@@ -82,73 +121,451 @@ STAT_KEYWORDS = {
     "player",
 }
 
+
 # =====================================================
-# NORMALIZE TEXT
+# TOP SCORER KEYWORDS
 # =====================================================
 
-def normalize(text: str):
+TOP_SCORER_KEYWORDS = [
+    "top scorer",
+    "top scorers",
+    "top scoring",
+    "leading scorer",
+    "leading scorers",
+    "leading goal scorer",
+    "leading goal scorers",
+    "most goals",
+    "highest goals",
+    "highest goal scorer",
+    "highest goal scorers",
+    "golden boot",
+    "golden boot winner",
+    "who scored the most",
+    "who has the most goals",
+]
 
-    text = text.lower()
 
-    text = re.sub(r"[^\w\s]", " ", text)
+# =====================================================
+# TEXT NORMALIZATION
+# =====================================================
+
+def normalize(text: str) -> str:
+    """
+    Normalize text and common team aliases.
+    """
+
+    text = str(text).lower()
+
+    text = re.sub(
+        r"[^\w\s]",
+        " ",
+        text,
+    )
 
     for old, new in TEAM_ALIASES.items():
-        text = text.replace(old, new)
+        text = text.replace(
+            old,
+            new,
+        )
 
     return " ".join(text.split())
 
+
 # =====================================================
-# PLAYER DETECTOR
+# YEAR / SEASON DETECTION
 # =====================================================
 
-def find_player(query, metadata):
+def extract_year(query: str):
+    """
+    Extract a four-digit year from a query.
+
+    Example:
+        'top scorer 2021'
+        -> 2021
+    """
+
+    match = re.search(
+        r"\b(20\d{2})\b",
+        query,
+    )
+
+    if match:
+        return int(match.group(1))
+
+    return None
+
+
+def extract_season(query: str):
+    """
+    Extract a season written as:
+
+        2020-21
+        2021-22
+        2019/20
+
+    Returns the starting year.
+
+    Example:
+        'top scorer 2020-21'
+        -> 2020
+    """
+
+    match = re.search(
+        r"\b(20\d{2})[-/](\d{2})\b",
+        query,
+    )
+
+    if match:
+        return int(match.group(1))
+
+    return None
+
+
+# =====================================================
+# TOP SCORER DETECTION
+# =====================================================
+
+def is_top_scorer_query(query: str) -> bool:
+    """
+    Detect leaderboard/top-scorer questions.
+    """
+
+    q = normalize(query)
+
+    return any(
+        phrase in q
+        for phrase in TOP_SCORER_KEYWORDS
+    )
+
+
+# =====================================================
+# PLAYER DETECTION
+# =====================================================
+
+def find_player(
+    query: str,
+    metadata,
+):
+    """
+    Detect a player using:
+
+    1. Full name
+    2. First name + surname
+    3. Unique surname
+    4. Fuzzy matching
+    """
 
     if not metadata:
         return None
 
     names = sorted(
-        list(
-            {
-                m["player"]
-                for m in metadata
-                if "player" in m
-            }
-        )
+        {
+            m["player"]
+            for m in metadata
+            if m.get("player")
+        }
     )
 
-    q = query.lower()
+    q = normalize(query)
 
-    # full name
-    for name in names:
-        if name.lower() in q:
-            return name
-
-    # surname
-    for name in names:
-        last = name.split()[-1].lower()
-        if last in q:
-            return name
-
-    # fuzzy
-    match = difflib.get_close_matches(
-        q,
-        [n.lower() for n in names],
-        n=1,
-        cutoff=0.65,
+    q_words = set(
+        q.split()
     )
 
-    if match:
-        for name in names:
-            if name.lower() == match[0]:
+    # -------------------------------------------------
+    # Exact full name
+    # -------------------------------------------------
+
+    for name in names:
+
+        if normalize(name) in q:
+
+            return name
+
+    # -------------------------------------------------
+    # First name + surname
+    # -------------------------------------------------
+
+    for name in names:
+
+        name_words = normalize(
+            name
+        ).split()
+
+        if len(name_words) >= 2:
+
+            first_name = name_words[0]
+            surname = name_words[-1]
+
+            if (
+                first_name in q_words
+                and surname in q_words
+            ):
+
                 return name
 
+    # -------------------------------------------------
+    # Unique surname
+    # -------------------------------------------------
+
+    surname_matches = []
+
+    for name in names:
+
+        surname = (
+            normalize(name)
+            .split()[-1]
+        )
+
+        if surname in q_words:
+
+            surname_matches.append(
+                name
+            )
+
+    if len(surname_matches) == 1:
+
+        return surname_matches[0]
+
+    # -------------------------------------------------
+    # Fuzzy matching
+    # -------------------------------------------------
+
+    query_words = [
+        word
+        for word in q.split()
+        if word not in STAT_KEYWORDS
+        and word not in TOP_SCORER_KEYWORDS
+    ]
+
+    player_query = " ".join(
+        query_words
+    ).strip()
+
+    if player_query:
+
+        matches = difflib.get_close_matches(
+            player_query,
+            [
+                normalize(name)
+                for name in names
+            ],
+            n=1,
+            cutoff=0.65,
+        )
+
+        if matches:
+
+            matched = matches[0]
+
+            for name in names:
+
+                if normalize(name) == matched:
+
+                    return name
+
     return None
+
+
+# =====================================================
+# PLAYER RECORD RETRIEVAL
+# =====================================================
+
+def get_player_records(
+    player_name: str,
+):
+    """
+    Retrieve all records belonging to
+    one specific player using metadata.
+    """
+
+    collection = get_player_collection()
+
+    results = collection.get(
+        where={
+            "player": player_name
+        },
+        include=[
+            "metadatas"
+        ],
+    )
+
+    return results.get(
+        "metadatas",
+        [],
+    )
+
+
+# =====================================================
+# TOP SCORER SEARCH
+# =====================================================
+
+def search_top_scorers(
+    query: str,
+    n_results: int = 10,
+):
+    """
+    Find the highest-scoring players for a
+    requested season.
+
+    This MUST happen before normal player
+    or historical match search.
+    """
+
+    collection = get_player_collection()
+
+    # -------------------------------------------------
+    # Determine requested season
+    # -------------------------------------------------
+
+    season = extract_season(query)
+
+    if season is None:
+
+        year = extract_year(query)
+
+        if year is None:
+
+            return (
+                "Please specify a Premier League "
+                "season or year."
+            )
+
+        # ---------------------------------------------
+        # Interpret a plain year as the season
+        # beginning in that year.
+        #
+        # Example:
+        # 2021 -> 2021-22 dataset
+        #
+        # If your dataset instead stores 2021
+        # for 2020-21, change this mapping.
+        # ---------------------------------------------
+
+        season = year
+
+    # -------------------------------------------------
+    # Retrieve complete player metadata
+    # -------------------------------------------------
+
+    results = collection.get(
+        include=[
+            "metadatas"
+        ],
+    )
+
+    metadata = results.get(
+        "metadatas",
+        [],
+    )
+
+    if not metadata:
+
+        return "No player statistics found."
+
+    # -------------------------------------------------
+    # Filter season
+    # -------------------------------------------------
+
+    season_rows = [
+        row
+        for row in metadata
+        if row.get("season") == season
+    ]
+
+    if not season_rows:
+
+        return (
+            f"No player statistics found for "
+            f"season {season}."
+        )
+
+    # -------------------------------------------------
+    # Build dataframe
+    # -------------------------------------------------
+
+    rows = []
+
+    for row in season_rows:
+
+        rows.append(
+            {
+                "Player": row.get(
+                    "player",
+                    "-",
+                ),
+                "Team": row.get(
+                    "team",
+                    "-",
+                ),
+                "Games": row.get(
+                    "games",
+                    0,
+                ),
+                "Minutes": row.get(
+                    "minutes",
+                    0,
+                ),
+                "Goals": row.get(
+                    "goals",
+                    0,
+                ),
+                "Assists": row.get(
+                    "assists",
+                    0,
+                ),
+                "Yellow Cards": row.get(
+                    "yellow_cards",
+                    0,
+                ),
+                "Red Cards": row.get(
+                    "red_cards",
+                    0,
+                ),
+            }
+        )
+
+    df = pd.DataFrame(
+        rows
+    )
+
+    if df.empty:
+
+        return "No player statistics found."
+
+    # -------------------------------------------------
+    # Sort by goals
+    # -------------------------------------------------
+
+    df = df.sort_values(
+        [
+            "Goals",
+            "Assists",
+        ],
+        ascending=[
+            False,
+            False,
+        ],
+    )
+
+    # -------------------------------------------------
+    # Return top players
+    # -------------------------------------------------
+
+    return df.head(
+        n_results
+    ).reset_index(
+        drop=True
+    )
+
 
 # =====================================================
 # QUERY TYPE
 # =====================================================
 
-def is_match_query(query):
+def is_match_query(
+    query: str,
+):
 
     q = normalize(query)
 
@@ -160,72 +577,135 @@ def is_match_query(query):
 
     return len(teams) >= 2
 
-def is_player_query(query):
+
+def is_player_query(
+    query: str,
+):
 
     q = normalize(query)
 
-    if any(word in q for word in STAT_KEYWORDS):
+    if any(
+        word in q
+        for word in STAT_KEYWORDS
+    ):
+
         return True
 
-    if re.search(r"20\d{2}", q):
+    if re.search(
+        r"20\d{2}",
+        q,
+    ):
+
         return True
 
     return False
 
-def search_historical_stats_df(query: str, n_results: int = 25):
+
+# =====================================================
+# MAIN DATAFRAME SEARCH
+# =====================================================
+
+def search_historical_stats_df(
+    query: str,
+    n_results: int = 25,
+):
 
     q = normalize(query)
 
-    # =====================================================
-    # PLAYER SEARCH
-    # =====================================================
+    # =================================================
+    # 1. TOP SCORER / LEADERBOARD QUERY
+    # =================================================
+
+    if is_top_scorer_query(q):
+
+        return search_top_scorers(
+            q,
+            n_results=n_results,
+        )
+
+    # =================================================
+    # 2. PLAYER SEARCH
+    # =================================================
 
     player_collection = get_player_collection()
 
-    probe = player_collection.query(
-        query_texts=[q],
-        n_results=20,
+    # Get all player metadata so that a player is not
+    # missed because semantic search ranked their record
+    # too low.
+
+    probe = player_collection.get(
+        include=[
+            "metadatas"
+        ],
     )
 
-    metadata = probe["metadatas"][0]
+    all_player_metadata = probe.get(
+        "metadatas",
+        [],
+    )
 
-    player_name = find_player(q, metadata)
+    player_name = find_player(
+        q,
+        all_player_metadata,
+    )
 
     if player_name:
 
-        results = player_collection.query(
-            query_texts=[q],
-            n_results=500,
+        metadata = get_player_records(
+            player_name
         )
 
-        metadata = results["metadatas"][0]
+        if not metadata:
 
-        if player_name:
+            return (
+                "No player statistics found."
+            )
+
+        # -------------------------------------------------
+        # Season filter
+        # -------------------------------------------------
+
+        requested_season = extract_season(
+            q
+        )
+
+        if requested_season is None:
+
+            requested_season = extract_year(
+                q
+            )
+
+        if requested_season is not None:
+
             metadata = [
                 row
                 for row in metadata
-                if row["player"] == player_name
+                if row.get(
+                    "season"
+                ) == requested_season
             ]
 
-        year_match = re.search(r"(20\d{2})", q)
+        if not metadata:
 
-        if year_match:
+            return (
+                "No player statistics found."
+            )
 
-            year = int(year_match.group(1))
-
-            metadata = [
-                row
-                for row in metadata
-                if row["season"] == year
-            ]
-
-        if len(metadata) == 0:
-            return "No player statistics found."
+        # -------------------------------------------------
+        # Sort by season
+        # -------------------------------------------------
 
         metadata = sorted(
             metadata,
-            key=lambda x: x["season"],
+            key=lambda x: x.get(
+                "season",
+                0,
+            ),
         )
+
+        # -------------------------------------------------
+        # Build season rows
+        # -------------------------------------------------
 
         season_rows = []
 
@@ -238,56 +718,115 @@ def search_historical_stats_df(query: str, n_results: int = 25):
 
         for row in metadata:
 
-            total_games += row.get("games", 0)
-            total_minutes += row.get("minutes", 0)
-            total_goals += row.get("goals", 0)
-            total_assists += row.get("assists", 0)
-            total_yellow += row.get("yellow_cards", 0)
-            total_red += row.get("red_cards", 0)
+            games = row.get(
+                "games",
+                0,
+            )
 
-            season_rows.append({
-                "Season": row["season"],
-                "Club": row["team"],
-                "Games": row["games"],
-                "Minutes": row["minutes"],
-                "Goals": row["goals"],
-                "Assists": row["assists"],
-                "Yellow Cards": row["yellow_cards"],
-                "Red Cards": row["red_cards"],
-            })
+            minutes = row.get(
+                "minutes",
+                0,
+            )
 
-        career_df = pd.DataFrame([{
-            "Player": metadata[0]["player"],
-            "Games": total_games,
-            "Minutes": total_minutes,
-            "Goals": total_goals,
-            "Assists": total_assists,
-            "Yellow Cards": total_yellow,
-            "Red Cards": total_red,
-        }])
+            goals = row.get(
+                "goals",
+                0,
+            )
 
-        season_df = pd.DataFrame(season_rows)
+            assists = row.get(
+                "assists",
+                0,
+            )
+
+            yellow = row.get(
+                "yellow_cards",
+                0,
+            )
+
+            red = row.get(
+                "red_cards",
+                0,
+            )
+
+            total_games += games
+            total_minutes += minutes
+            total_goals += goals
+            total_assists += assists
+            total_yellow += yellow
+            total_red += red
+
+            season_rows.append(
+                {
+                    "Season": row.get(
+                        "season",
+                        "-",
+                    ),
+                    "Club": row.get(
+                        "team",
+                        "-",
+                    ),
+                    "Games": games,
+                    "Minutes": minutes,
+                    "Goals": goals,
+                    "Assists": assists,
+                    "Yellow Cards": yellow,
+                    "Red Cards": red,
+                }
+            )
+
+        # -------------------------------------------------
+        # Career summary
+        # -------------------------------------------------
+
+        career_df = pd.DataFrame(
+            [
+                {
+                    "Player": metadata[0].get(
+                        "player",
+                        player_name,
+                    ),
+                    "Games": total_games,
+                    "Minutes": total_minutes,
+                    "Goals": total_goals,
+                    "Assists": total_assists,
+                    "Yellow Cards": total_yellow,
+                    "Red Cards": total_red,
+                }
+            ]
+        )
+
+        season_df = pd.DataFrame(
+            season_rows
+        )
 
         return {
             "career": career_df,
             "season": season_df,
         }
 
-    # =====================================================
-    # MATCH SEARCH
-    # =====================================================
+    # =================================================
+    # 3. HISTORICAL MATCH SEARCH
+    # =================================================
 
     collection = get_collection()
 
     results = collection.query(
-        query_texts=[q],
+        query_texts=[
+            q
+        ],
         n_results=n_results,
     )
 
-    docs = results["documents"][0]
+    docs = results.get(
+        "documents",
+        [[]],
+    )[0]
 
-    if len(docs) == 0:
-        return "No historical matches found."
+    if not docs:
+
+        return (
+            "No historical matches found."
+        )
 
     requested_teams = [
         team
@@ -299,99 +838,269 @@ def search_historical_stats_df(query: str, n_results: int = 25):
 
     for doc in docs:
 
-        season = re.search(r"Season:\s*(.*?)\.", doc)
-        competition = re.search(r"Competition:\s*(.*?)\.", doc)
-        matchday = re.search(r"Matchday:\s*(.*?)\.", doc)
-        home = re.search(r"Home Team:\s*(.*?)\.", doc)
-        away = re.search(r"Away Team:\s*(.*?)\.", doc)
-        score = re.search(r"Score:\s*([0-9\-]+)", doc)
-        winner = re.search(r"Winner:\s*(.*?)\.", doc)
+        season = re.search(
+            r"Season:\s*(.*?)\.",
+            doc,
+        )
+
+        competition = re.search(
+            r"Competition:\s*(.*?)\.",
+            doc,
+        )
+
+        matchday = re.search(
+            r"Matchday:\s*(.*?)\.",
+            doc,
+        )
+
+        home = re.search(
+            r"Home Team:\s*(.*?)\.",
+            doc,
+        )
+
+        away = re.search(
+            r"Away Team:\s*(.*?)\.",
+            doc,
+        )
+
+        score = re.search(
+            r"Score:\s*([0-9\-]+)",
+            doc,
+        )
+
+        winner = re.search(
+            r"Winner:\s*(.*?)\.",
+            doc,
+        )
 
         if not home or not away:
+
             continue
 
-        home_team = normalize(home.group(1))
-        away_team = normalize(away.group(1))
+        home_team = normalize(
+            home.group(1)
+        )
+
+        away_team = normalize(
+            away.group(1)
+        )
+
+        # -------------------------------------------------
+        # Two-team filtering
+        # -------------------------------------------------
 
         if len(requested_teams) >= 2:
 
-            if not (
+            team_a = requested_teams[0]
+            team_b = requested_teams[1]
+
+            valid_match = (
                 (
-                    requested_teams[0] in home_team
-                    and requested_teams[1] in away_team
+                    team_a in home_team
+                    and
+                    team_b in away_team
                 )
                 or
                 (
-                    requested_teams[1] in home_team
-                    and requested_teams[0] in away_team
+                    team_b in home_team
+                    and
+                    team_a in away_team
                 )
-            ):
+            )
+
+            if not valid_match:
+
                 continue
+
+        # -------------------------------------------------
+        # One-team filtering
+        # -------------------------------------------------
 
         elif len(requested_teams) == 1:
 
+            team = requested_teams[0]
+
             if (
-                requested_teams[0] not in home_team
+                team not in home_team
                 and
-                requested_teams[0] not in away_team
+                team not in away_team
             ):
+
                 continue
 
-        rows.append({
-            "Season": season.group(1) if season else "-",
-            "Competition": competition.group(1) if competition else "-",
-            "Matchday": matchday.group(1).strip() if matchday else "-",
-            "Home": home.group(1).replace(" FC", ""),
-            "Score": score.group(1) if score else "-",
-            "Away": away.group(1).replace(" FC", ""),
-            "Winner": winner.group(1).replace(" FC", "") if winner else "-",
-        })
+        rows.append(
+            {
+                "Season": (
+                    season.group(1)
+                    if season
+                    else "-"
+                ),
 
-    if len(rows) == 0:
-        return "No historical matches found."
+                "Competition": (
+                    competition.group(1)
+                    if competition
+                    else "-"
+                ),
 
-    df = pd.DataFrame(rows)
+                "Matchday": (
+                    matchday.group(1).strip()
+                    if matchday
+                    else "-"
+                ),
+
+                "Home": (
+                    home.group(1)
+                    .replace(
+                        " FC",
+                        "",
+                    )
+                    if home
+                    else "-"
+                ),
+
+                "Score": (
+                    score.group(1)
+                    if score
+                    else "-"
+                ),
+
+                "Away": (
+                    away.group(1)
+                    .replace(
+                        " FC",
+                        "",
+                    )
+                    if away
+                    else "-"
+                ),
+
+                "Winner": (
+                    winner.group(1)
+                    .replace(
+                        " FC",
+                        "",
+                    )
+                    if winner
+                    else "-"
+                ),
+            }
+        )
+
+    if not rows:
+
+        return (
+            "No historical matches found."
+        )
+
+    df = pd.DataFrame(
+        rows
+    )
 
     if "Season" in df.columns:
-        df = df.sort_values("Season")
 
-    return df
+        df = df.sort_values(
+            "Season"
+        )
 
-def search_historical_stats(query: str, n_results: int = 25) -> str:
+    return df.reset_index(
+        drop=True
+    )
+
+
+# =====================================================
+# STRING VERSION FOR AGENT
+# =====================================================
+
+def search_historical_stats(
+    query: str,
+    n_results: int = 25,
+) -> str:
+
     """
-    Wrapper for the RAG agent.
+    Wrapper used by the agent.
 
-    The notebook uses:
+    Dataframe mode:
         search_historical_stats_df()
 
-    The agent uses:
+    Agent mode:
         search_historical_stats()
 
     Always returns a string.
     """
 
-    result = search_historical_stats_df(query, n_results)
+    result = search_historical_stats_df(
+        query,
+        n_results,
+    )
 
-    # -----------------------------
-    # Error messages
-    # -----------------------------
-    if isinstance(result, str):
+    # =================================================
+    # ERROR / NO DATA
+    # =================================================
+
+    if isinstance(
+        result,
+        str,
+    ):
+
         return result
 
-    # -----------------------------
-    # Player search
-    # -----------------------------
-    if isinstance(result, dict):
+    # =================================================
+    # TOP SCORER DATAFRAME
+    # =================================================
 
-        career_df = result["career"]
-        season_df = result["season"]
+    if isinstance(
+        result,
+        pd.DataFrame,
+    ):
 
         try:
-            career = career_df.to_markdown(index=False)
-            season = season_df.to_markdown(index=False)
+
+            return result.to_markdown(
+                index=False
+            )
+
         except Exception:
-            career = career_df.to_string(index=False)
-            season = season_df.to_string(index=False)
+
+            return result.to_string(
+                index=False
+            )
+
+    # =================================================
+    # PLAYER STATISTICS
+    # =================================================
+
+    if isinstance(
+        result,
+        dict,
+    ):
+
+        career_df = result[
+            "career"
+        ]
+
+        season_df = result[
+            "season"
+        ]
+
+        try:
+
+            career = career_df.to_markdown(
+                index=False
+            )
+
+            season = season_df.to_markdown(
+                index=False
+            )
+
+        except Exception:
+
+            career = career_df.to_string(
+                index=False
+            )
+
+            season = season_df.to_string(
+                index=False
+            )
 
         return (
             "# PLAYER CAREER SUMMARY\n\n"
@@ -400,14 +1109,10 @@ def search_historical_stats(query: str, n_results: int = 25) -> str:
             f"{season}"
         )
 
-    # -----------------------------
-    # Historical matches
-    # -----------------------------
-    if isinstance(result, pd.DataFrame):
+    # =================================================
+    # FALLBACK
+    # =================================================
 
-        try:
-            return result.to_markdown(index=False)
-        except Exception:
-            return result.to_string(index=False)
-
-    return str(result)
+    return str(
+        result
+    )
